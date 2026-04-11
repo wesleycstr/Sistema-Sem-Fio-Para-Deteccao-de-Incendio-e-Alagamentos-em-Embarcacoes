@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  mariadb:
+    image: mariadb:10.5
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_DATABASE: sensores
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    networks:
+      - iot_net
+
+  apache:
+    build: .
+    container_name: apache_php
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./web:/var/www/html
+    depends_on:
+      - mariadb
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - iot_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mariadb
+    networks:
+      - iot_net
+
+networks:
+  iot_net:
