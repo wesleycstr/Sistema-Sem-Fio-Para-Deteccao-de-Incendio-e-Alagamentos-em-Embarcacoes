@@ -50,5 +50,21 @@ A medição de temperatura é realizada por meio do sensor AHT10, que apresenta 
 
 Por fim, para monitoramento de alagamento foi utilizado o sensor de nível de água HW-028 que possui saída digital que indica presença ou ausência de água e trabalha com tensão de 3,3V a 5V. Também foi acrescentado um módulo relé com microcontrolador e conectividade Wi-Fi integrada para acionamento de dispositivos externos, como alarmes sonoros, permitindo uma resposta imediata em situações críticas. A tabela 01 demonstra o custo de aquisição aproximado para cada dispositivo.
 <img width="864" height="376" alt="image" src="https://github.com/user-attachments/assets/b551c145-b13c-465f-8e89-730b33d56b99" />
+
+## Processamento dos dados
+Os dados obtidos pelos sensores são encaminhados ao servidor e armazenados em um banco de dados. Nesse ambiente, os dados são recepcionados por um script que verifica a origem, filtra as informações e inseri-as no banco de dados.
+
+Uma vez armazenados, esses dados passam a ser acessados pela plataforma Grafana, utilizada para fins de visualização e análise dos dados. Por meio dessa ferramenta, são elaborados painéis que permitem ao usuário acompanhar o comportamento das variáveis monitoradas.
+
+Além da função de visualização, o Grafana também é empregado na definição de regras de alerta. O usuário pode estabelecer limites para cada variável e, sempre que esses valores são excedidos é disparado um script que aciona um alarme externo.
+
+Por fim, destaca-se que essa organização separa a etapa de coleta de dados das camadas de visualização e gerenciamento de alertas. Essa separação contribui para tornar a solução mais flexível, facilitando ajustes e adaptações conforme as necessidades de diferentes aplicações.
+</details>
+<details>
+<summary>IMPLEMENTAÇÃO</summary>
+Nesta seção, serão apresentados os detalhes da implementação de cada nó, do servidor e do processo de integração com o Grafana.
+
+## Implementação do nó sensor
+Cada nó sensor é responsável por coletar os dados dos sensores conectados ao seu microcontrolador, bem como por encaminhar informações provenientes de outros nós quando necessário. Para que este processo aconteça
 </details>
 </div>
