@@ -1,5 +1,6 @@
 <div align="justify">
-# Sistema-Sem-Fio-Para-Detecao-de-Incendio-e-Alagamentos-em-Embarcacoes
+  
+# Sistema Sem Fio Para Detecçao de Incêndio e Alagamentos em Embarcações
 Trabalho de Conclusão de Curso Apresentado ao Curso Superior de Tecnologia em Redes de Computadores - IFRN 2026
 
 ## RESUMO
