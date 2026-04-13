@@ -65,7 +65,19 @@ Por fim, destaca-se que essa organização separa a etapa de coleta de dados das
 <summary>IMPLEMENTAÇÃO</summary>
 Nesta seção, serão apresentados os detalhes da implementação de cada nó, do servidor e do processo de integração com o Grafana.
 
+## Ambiente de desenvolvimento
+
+
 ## Implementação do nó sensor
 Cada nó sensor é responsável por coletar os dados dos sensores conectados ao seu microcontrolador, bem como por encaminhar informações provenientes de outros nós quando necessário. Para que este processo aconteça
+
+## Comunicação e rede
+
+## Servidor e banco de dados
+
+## Integração com visualização e alertas
+
+## Prototipagem e Testes
+
 </details>
 </div>
