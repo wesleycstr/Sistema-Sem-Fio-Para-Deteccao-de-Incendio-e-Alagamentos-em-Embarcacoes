@@ -1,3 +1,4 @@
+<div align="justify">
 # Sistema-Sem-Fio-Para-Detecao-de-Incendio-e-Alagamentos-em-Embarcacoes
 Trabalho de Conclusão de Curso Apresentado ao Curso Superior de Tecnologia em Redes de Computadores - IFRN 2026
 
@@ -49,4 +50,4 @@ A medição de temperatura é realizada por meio do sensor AHT10, que apresenta 
 Por fim, para monitoramento de alagamento foi utilizado o sensor de nível de água HW-028 que possui saída digital que indica presença ou ausência de água e trabalha com tensão de 3,3V a 5V. Também foi acrescentado um módulo relé com microcontrolador e conectividade Wi-Fi integrada para acionamento de dispositivos externos, como alarmes sonoros, permitindo uma resposta imediata em situações críticas. A tabela 01 demonstra o custo de aquisição aproximado para cada dispositivo.
 <img width="864" height="376" alt="image" src="https://github.com/user-attachments/assets/b551c145-b13c-465f-8e89-730b33d56b99" />
 </details>
-
+</div>
