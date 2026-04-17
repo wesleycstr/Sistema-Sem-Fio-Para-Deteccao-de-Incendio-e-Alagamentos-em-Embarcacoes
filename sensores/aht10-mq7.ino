@@ -9,6 +9,9 @@ const int ledPin = LED_BUILTIN;
 const int externalLedPin = D3;
 const int mq7Pin = A0;
 
+float RL = 10000.0;   // resistor de carga (10k)
+float R0 = 10587.52;
+
 Adafruit_AHTX0 aht;
 Adafruit_Sensor *aht_humidity = nullptr;
 Adafruit_Sensor *aht_temp = nullptr;
@@ -197,9 +200,25 @@ void loop() {
   // -------------------------
   // LEITURA MQ-7
   // -------------------------
-  int mq7Value = analogRead(mq7Pin);
-  float voltage = mq7Value * (3.3 / 1024.0);
-  float gasConcentration = voltage * 1000;
+int mq7Value = analogRead(mq7Pin);
+
+// Evita divisão por zero
+if (mq7Value == 0) mq7Value = 1;
+
+// Converte para tensão
+float Vout = mq7Value * (3.3 / 1023.0);
+
+// Calcula Rs
+float Rs = RL * ((3.3 / Vout) - 1);
+
+// Razão Rs/R0
+float ratio = Rs / R0;
+
+// Converte para ppm (CO)
+float gasConcentration = 99.042 * pow(ratio, -1.518);
+
+Serial.print("Rs: ");
+Serial.println(Rs);
 
   Serial.print("Valor do MQ-7: ");
   Serial.print(mq7Value);
@@ -209,7 +228,7 @@ void loop() {
   // -------------------------
   // MONTAGEM DA MENSAGEM
   // -------------------------
-  String mensagem = "?sensor=caixinha";
+  String mensagem = "?sensor=protoboard_azul";
   mensagem += "&temperatura=" + String(temperatura);
   mensagem += "&umidade=" + String(umidade);
   mensagem += "&gas=" + String(gasConcentration);
