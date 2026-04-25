@@ -1,62 +1,48 @@
--- phpMyAdmin SQL Dump
--- version 5.2.3
--- https://www.phpmyadmin.net/
---
--- Host: mariadb
--- Tempo de geração: 11/04/2026 às 17:16
--- Versão do servidor: 10.5.29-MariaDB-ubu2004
--- Versão do PHP: 8.3.26
+-- Criar banco de dados
+CREATE DATABASE IF NOT EXISTS siscav
+DEFAULT CHARACTER SET utf8mb4
+DEFAULT COLLATE utf8mb4_unicode_ci;
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+-- Usar o banco
+USE siscav;
 
+-- Tabela sensores
+CREATE TABLE sensores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    localizacao VARCHAR(255) NOT NULL
+);
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+-- Tabela dados
+CREATE TABLE dados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_sensor INT NOT NULL,
+    temperatura FLOAT,
+    umidade FLOAT,
+    gas_co FLOAT,
+    FOREIGN KEY (id_sensor) REFERENCES sensores(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
 
---
--- Banco de dados: `sensores`
---
+-- Tabela alarme
+CREATE TABLE alarme (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_sensor INT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    cor VARCHAR(20),
+    FOREIGN KEY (id_sensor) REFERENCES sensores(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `temperatura`
---
-
-CREATE TABLE `temperatura` (
-  `id` int(11) NOT NULL,
-  `sensor` varchar(50) DEFAULT NULL,
-  `valor` float DEFAULT NULL,
-  `data_hora` timestamp NOT NULL DEFAULT current_timestamp(),
-  `gas` float DEFAULT NULL,
-  `umidade` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Índices para tabelas despejadas
---
-
---
--- Índices de tabela `temperatura`
---
-ALTER TABLE `temperatura`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT para tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `temperatura`
---
-ALTER TABLE `temperatura`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- Tabela logs
+CREATE TABLE logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_sensor INT NOT NULL,
+    evento TEXT NOT NULL,
+    FOREIGN KEY (id_sensor) REFERENCES sensores(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
