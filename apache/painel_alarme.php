@@ -71,6 +71,17 @@
         font-size: 14px;
       }
     }
+    @keyframes piscarVermelho {
+  0%   { background-color: #c62828; }
+  50%  { background-color: #5a0000; }
+  100% { background-color: #c62828; }
+}
+
+.alarme {
+  animation: piscarVermelho 1s infinite;
+  color: #fff;
+  font-weight: bold;
+}
   </style>
 </head>
 <body>
@@ -88,34 +99,67 @@
           <th>Cor</th>
         </tr>
       </thead>
-      <tbody>
-        <tr style="background-color: red">
-          <td>1</td>
-          <td>Sensor A</td>
-          <td>Ativo</td>
-        </tr>
-        <tr style="background-color: green">
-          <td>2</td>
-          <td>Sensor B</td>
-          <td>Inativo</td>
-          <td><input type="color" onchange="mudarCor(this)"></td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Sensor C</td>
-          <td>Ativo</td>
-          <td><input type="color" onchange="mudarCor(this)"></td>
-        </tr>
-      </tbody>
+<tbody>
+<?php
+include 'conexao.php';
+
+$sql = "
+SELECT 
+  sensores.id,
+  sensores.localizacao,
+  alarme.status,
+  alarme.cor
+FROM sensores
+LEFT JOIN alarme ON sensores.id = alarme.id_sensor
+";
+
+$result = $conn->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+
+    $classe = "";
+    $cor = "#161616"; // padrão
+
+    switch ($row['status']) {
+        case 1:
+            $cor = "#2e7d32"; // verde
+            break;
+        case 2:
+            $cor = "#f9a825"; // amarelo
+            break;
+        case 3:
+            $classe = "alarme"; // ativa o piscar
+            break;
+    }
+
+    echo "<tr class='$classe' style='background-color: $cor'>
+            <td>{$row['id']}</td>
+            <td>{$row['localizacao']}</td>
+            <td>{$row['status']}</td>
+            <td>-</td>
+          </tr>";
+}?>
+</tbody>
     </table>
   </div>
 </div>
 
 <script>
-  function mudarCor(input) {
-    const linha = input.closest("tr");
-    linha.style.backgroundColor = input.value;
-  }
+function mudarCor(input) {
+  const linha = input.closest("tr");
+  const id = linha.cells[0].innerText;
+  const cor = input.value;
+
+  linha.style.backgroundColor = cor;
+
+  fetch("salvar_cor.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `id=${id}&cor=${cor}`
+  });
+}
 </script>
 
 </body>
