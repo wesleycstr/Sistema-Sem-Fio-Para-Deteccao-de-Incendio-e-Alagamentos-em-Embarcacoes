@@ -29,6 +29,7 @@ table{
 th, td{
     padding:15px;
     text-align:left;
+    border-bottom:1px solid white;
 }
 
 th{
@@ -177,6 +178,11 @@ width:300px;
 <label>CO Máx</label>
 <input type="number" id="gasMax" class="campo">
 
+<label>
+<input type="checkbox" id="alarmeSonoro">
+Ativar alarme sonoro
+</label>
+
 <br><br>
 
 <button onclick="salvarConfig()">
@@ -216,6 +222,9 @@ function abrirModal(id){
         document.getElementById("gasMax").value =
         data.gas_max;
 
+        document.getElementById("alarmeSonoro").checked =
+        data.alarme_sonoro == 1;
+
     });
 
 }
@@ -230,13 +239,20 @@ function salvarConfig(){
 
     const id = document.getElementById("sensorId").value;
 
-    const tempMax = document.getElementById("tempMax").value;
+    const tempMax =
+    document.getElementById("tempMax").value;
 
-    const umiMin = document.getElementById("umiMin").value;
+    const umiMin =
+    document.getElementById("umiMin").value;
 
-    const umiMax = document.getElementById("umiMax").value;
+    const umiMax =
+    document.getElementById("umiMax").value;
 
-    const gasMax = document.getElementById("gasMax").value;
+    const gasMax =
+    document.getElementById("gasMax").value;
+
+    const alarmeSonoro =
+    document.getElementById("alarmeSonoro").checked ? 1 : 0;
 
     fetch("salvar_config.php",{
 
@@ -251,7 +267,8 @@ function salvarConfig(){
         &tempMax=${tempMax}
         &umiMin=${umiMin}
         &umiMax=${umiMax}
-        &gasMax=${gasMax}`
+        &gasMax=${gasMax}
+        &alarmeSonoro=${alarmeSonoro}`
 
     })
     .then(response => response.text())
@@ -263,7 +280,61 @@ function salvarConfig(){
 
     });
 
-}config
+}</script>
+
+<audio id="somAlarme" loop>
+
+<source src="alarme.mp3" type="audio/mpeg">
+
+</audio>
+
+<script>
+    const som = document.getElementById("somAlarme");
+
+let tocando = false;
+
+function verificarAlarmes(){
+
+    fetch("verificar_alarme.php")
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.alarme == true){
+
+            if(!tocando){
+
+                som.play();
+
+                tocando = true;
+
+            }
+
+        }else{
+
+            som.pause();
+
+            som.currentTime = 0;
+
+            tocando = false;
+
+        }
+
+    });
+
+}
+
+setInterval(verificarAlarmes, 1000);
+</script>
+
+<script>
+    document.body.addEventListener("click", () => {
+    som.play().then(() => {
+        som.pause();
+        som.currentTime = 0;
+    });
+}, { once: true });
 </script>
 
 </body>
