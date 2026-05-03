@@ -1,21 +1,20 @@
 <?php
 
-function registrarLog($conn, $evento){
+function registrarLog($conn, $idSensor, $evento){
 
     $evento = $conn->real_escape_string($evento);
 
     $sql = "
 
     INSERT INTO logs
-    (evento)
+    (id_sensor, evento)
 
     VALUES
 
-    ('$evento')
+    ('$idSensor', '$evento')
 
     ";
 
     $conn->query($sql);
 
 }
-?>
