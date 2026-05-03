@@ -10,8 +10,11 @@ SELECT
     temperatura_max,
     umidade_min,
     umidade_max,
-    gas_max
+    gas_max,
+    alarme_sonoro
+
 FROM sensores
+
 WHERE id = '$id'
 
 ";
