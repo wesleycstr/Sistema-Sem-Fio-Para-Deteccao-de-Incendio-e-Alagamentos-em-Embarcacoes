@@ -1,6 +1,7 @@
 <?php
 
 include 'conexao.php';
+include 'logs.php';
 
 $sql = "
 
