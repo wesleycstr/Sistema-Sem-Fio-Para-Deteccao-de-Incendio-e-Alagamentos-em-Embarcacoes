@@ -1,6 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 include 'conexao.php';
+
+include 'logs.php';
+
 include 'processar_alertas.php';
 
 header('Content-Type: text/event-stream');
@@ -74,14 +79,70 @@ while($row = $result->fetch_assoc()){
     /* sensor offline se passar de 10 segundos */
     $offline = $diferenca > 10;
 
+    /* estado atual salvo no banco */
+
+    $sqlOffline = "
+
+    SELECT offline
+
+    FROM sensores
+
+    WHERE id='{$row['id']}'
+
+    ";
+
+    $resultOffline = $conn->query($sqlOffline);
+
+    $rowOffline = $resultOffline->fetch_assoc();
+
+    $offlineAnterior = $rowOffline['offline'];
+
     if($offline){
 
+        if($offlineAnterior == 0){
+
+        registrarLog(
+            $conn,
+            $row['id'],
+            "Sensor {$row['id']} ficou OFFLINE"
+        );
+
+        $conn->query("
+
+        UPDATE sensores
+
+        SET offline = 1
+
+        WHERE id='{$row['id']}'
+
+        ");
+
+}
         $cor = "#424242";
         $statusTexto = "OFFLINE";
         $classe = "";
         $erroGeral = true;
 
     }else{
+        if($offlineAnterior == 1){
+
+            registrarLog(
+                $conn,
+                $row['id'],
+                "Sensor {$row['id']} voltou ONLINE"
+            );
+
+            $conn->query("
+
+            UPDATE sensores
+
+            SET offline = 0
+
+            WHERE id='{$row['id']}'
+
+            ");
+
+        }
 
         switch($row['status']){
 
