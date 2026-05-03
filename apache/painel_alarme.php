@@ -86,6 +86,56 @@ tr{
     border-radius:5px;
 
 }
+.tabs{
+
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+
+}
+
+.tabButton{
+
+    background:#1f1f1f;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    cursor:pointer;
+    border-radius:8px;
+    font-size:16px;
+    transition:0.3s;
+
+}
+
+.tabButton:hover{
+
+    background:#333;
+
+}
+
+.tabButton.active{
+
+    background:#2e7d32;
+
+}
+
+.aba{
+
+    animation:fade 0.3s;
+
+}
+
+@keyframes fade{
+
+    from{
+        opacity:0;
+    }
+
+    to{
+        opacity:1;
+    }
+
+}
 
 </style>
 
@@ -93,7 +143,27 @@ tr{
 
 <body>
 
-<!--<h1>Painel SISCAV</h1>-->
+<div class="tabs">
+
+<button class="tabButton active"
+onclick="abrirAba('sensores')">
+
+Sensores
+
+</button>
+
+<button class="tabButton"
+onclick="abrirAba('logs')">
+
+Logs
+
+</button>
+
+</div>
+
+<!-- ABA SENSORES -->
+
+<div id="abaSensores" class="aba">
 
 <div class="table-container">
 
@@ -124,23 +194,38 @@ tr{
 
 </div>
 
-<script>
+</div>
 
-const source = new EventSource("stream.php");
+<!-- ABA LOGS -->
 
-source.onmessage = function(event){
+<div id="abaLogs" class="aba" style="display:none;">
 
-    document.getElementById("tabela").innerHTML = event.data;
+<div class="table-container">
 
-};
+<table>
 
-source.onerror = function(error){
+<thead>
 
-    console.log("Erro SSE:", error);
+<tr>
 
-};
+<th>ID</th>
+<th>Sensor</th>
+<th>Data/Hora</th>
+<th>Evento</th>
 
-</script>
+</tr>
+
+</thead>
+
+<tbody id="tabelaLogs">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
 
 <div id="modal"
 style="
@@ -335,6 +420,127 @@ setInterval(verificarAlarmes, 1000);
         som.currentTime = 0;
     });
 }, { once: true });
+</script>
+<script>
+    function abrirAba(aba){
+
+    /* esconder abas */
+
+    document.getElementById("abaSensores")
+    .style.display = "none";
+
+    document.getElementById("abaLogs")
+    .style.display = "none";
+
+    /* remover ativo */
+
+    document.querySelectorAll(".tabButton")
+    .forEach(btn => {
+
+        btn.classList.remove("active");
+
+    });
+
+    /* mostrar aba correta */
+
+    if(aba === "sensores"){
+
+        document.getElementById("abaSensores")
+        .style.display = "block";
+
+        document.querySelectorAll(".tabButton")[0]
+        .classList.add("active");
+
+    }
+
+    if(aba === "logs"){
+
+        document.getElementById("abaLogs")
+        .style.display = "block";
+
+        document.querySelectorAll(".tabButton")[1]
+        .classList.add("active");
+
+    }
+
+}
+</script>
+
+<script>
+
+/* ABAS */
+
+function abrirAba(nome){
+
+    document.getElementById("abaSensores")
+    .style.display = "none";
+
+    document.getElementById("abaLogs")
+    .style.display = "none";
+
+    document.querySelectorAll(".tabButton")
+    .forEach(btn => btn.classList.remove("active"));
+
+    if(nome == "sensores"){
+
+        document.getElementById("abaSensores")
+        .style.display = "block";
+
+        document.querySelectorAll(".tabButton")[0]
+        .classList.add("active");
+
+    }
+
+    if(nome == "logs"){
+
+        document.getElementById("abaLogs")
+        .style.display = "block";
+
+        document.querySelectorAll(".tabButton")[1]
+        .classList.add("active");
+
+    }
+
+}
+
+/* STREAM SENSORES */
+
+const source = new EventSource("stream.php");
+
+source.onmessage = function(event){
+
+    document.getElementById("tabela").innerHTML =
+    event.data;
+
+};
+
+source.onerror = function(error){
+
+    console.log("Erro SSE:", error);
+
+};
+
+/* LOGS */
+
+function atualizarLogs(){
+
+    fetch("logs_tabela.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        document.getElementById("tabelaLogs")
+        .innerHTML = data;
+
+    });
+
+}
+
+setInterval(atualizarLogs, 2000);
+
+atualizarLogs();
+
 </script>
 
 </body>
