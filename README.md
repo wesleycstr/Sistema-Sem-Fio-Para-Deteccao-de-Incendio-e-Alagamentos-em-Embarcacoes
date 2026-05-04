@@ -28,9 +28,9 @@ Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema s
 
 <details>
 <summary>OBJETIVOS</summary>
-### Objetivos Gerais
+###Objetivos Gerais
 Este trabalho tem como objetivo desenvolver um sistema de baixo custo em rede de computadores voltado à segurança da navegação aquaviária, capaz de realizar o monitoramento contínuo de variáveis ambientais, detectar situações anômalas em tempo real e emitir alertas adequados, contribuindo para a tomada rápida de decisões e para a prevenção de acidentes durante a navegação.
-### Objetivos Específicos
+###Objetivos Específicos
 a) Desenvolver protótipos de sensores capazes de monitorar variáveis ambientais e enviar dados por meio de rede sem fio;
 b) Configurar ambiente com servidor web, banco de dados e grafana;
 c) Desenvolver interface gráfica para acompanhamento por meio de dashboards; e
