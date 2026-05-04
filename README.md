@@ -51,7 +51,6 @@ Os dados armazenados também são integrados à plataforma de visualização Gra
   <p><em>Diagrama simplificado do sistema</em></p>
 </div>
 
-
 ### Componentes de hardware
 A arquitetura de hardware foi definida considerando disponibilidade, custo e compatibilidade entre os dispositivos. O sistema utiliza microcontroladores baseados no módulo ESP8266 Wemos Mini D1, escolhido devido à sua capacidade de processamento e conectividade Wi-Fi integrada. Este módulo possui 11 pinos de entrada/saída digital e 01 analógica, trabalha com com alimentação de 3,3V e suporta protocolos UART, I2C e SPI.
 
@@ -112,21 +111,38 @@ Além dos componentes apresentados, é necessário um servidor, que poderá ser 
 ### Coleta e envio de dados
 A obtenção dos dados de temperatura, gases e existência de água decorrente de alagamentos se dá por meio de unidades compostas por sensores conectados a microcontroladores. O sistema foi configurado de modo a executar leituras e transmissões em intervalos de 5 segundos, visando sustentar uma frequência elevada de amostragem, o que por sua vez coopera para que haja uma resposta mais ágil no enfrentamento de situações críticas.
 
-Os dados que são coletados seguem para o servidor através do protocolo HTTP, fazendo uso de uma rede sem fio. A fim de mitigar eventuais ocorrências de interferências dentro do sistema, foi implementado um pequeno atraso aleatório antes do envio das informações, reduzindo assim a probabilidade de colisões entre os dispositivos que dividem o mesmo canal de comunicação. Além disso, cada unidade conta com um identificador exclusivo, o qual é inserido em cada pacote que se envia, possibilitando ao servidor que reconheça a procedência dos dados e realize o seu armazenamento de maneira adequada junto ao banco de dados.
+Os dados que são coletados seguem para o servidor através do protocolo HTTP, fazendo uso de uma rede sem fio. EM DESENVOLVIMENTO--> A fim de mitigar eventuais ocorrências de interferências dentro do sistema, foi implementado um pequeno atraso aleatório antes do envio das informações, reduzindo assim a probabilidade de colisões entre os dispositivos que dividem o mesmo canal de comunicação. Além disso, cada unidade conta com um identificador exclusivo, o qual é inserido em cada pacote que se envia, possibilitando ao servidor que reconheça a procedência dos dados e realize o seu armazenamento de maneira adequada junto ao banco de dados. <--
 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/abc9e1b0-7be7-42e6-8337-92152eddee1f" width="900px" />
+</div>
 
 ### Processamento dos dados
 Os dados obtidos pelos sensores são encaminhados ao servidor e armazenados em um banco de dados. Nesse ambiente, os dados são recepcionados por um script que verifica a origem, filtra as informações e inseri-as no banco de dados.
 
 Uma vez armazenados, esses dados passam a ser acessados pela plataforma Grafana, utilizada para fins de visualização e análise dos dados. Por meio dessa ferramenta, são elaborados painéis que permitem ao usuário acompanhar o comportamento das variáveis monitoradas.
 
-Além da função de visualização, o Grafana também é empregado na definição de regras de alerta. O usuário pode estabelecer limites para cada variável e, sempre que esses valores são excedidos é disparado um script que aciona um alarme externo.
+Além da função de visualização, o Grafana também é empregado na definição de regras de alerta. Por meio dessa ferramenta o usuário pode estabelecer limites para cada variável monitorada e sempre que esses valores são excedidos é disparado um script que aciona um alarme externo.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/d1398123-f2c0-4c44-86d5-3f7869bec08a" width="300px" />
+  <p><em>Diagrama Entidade-Relacionamento do banco de dados</em></p>
+</div>
 
-Por fim, destaca-se que essa organização separa a etapa de coleta de dados das camadas de visualização e gerenciamento de alertas. Essa separação contribui para tornar a solução mais flexível, facilitando ajustes e adaptações conforme as necessidades de diferentes aplicações.
 </details>
 <details>
 <summary>IMPLEMENTAÇÃO</summary>
-Nesta seção, serão apresentados os detalhes da implementação de cada nó, do servidor e do processo de integração com o Grafana.
+A lógica do programa é dividida em três partes fundamentais: conexão com a rede, gerenciamento dos sensores e comunicação com um servidor via HTTP.
+
+Cada conjunto sensor é responsável por coletar os dados dos sensores conectados ao seu microcontrolador, bem como por encaminhar informações provenientes de outros nós quando necessário.
+
+O ESP8266 conecta-se à rede Wi Fi utilizando a senha fornecida. O sistema monitora continuamente o estado da conexão Wi-Fi no loop principal e tenta reconectar automaticamente caso a conexão seja perdida. Uma função é responsável por enviar os dados coletados para um servidor PHP que contém um script responsável pela recepção e inserção dos dados no banco de dados. 
+
+A função que envia os dados constrói uma URL completa com os parâmetros da requisição, realiza uma requisição POST e verifica o código de resposta. Em caso de sucesso (HTTP 200), um LED pisca rapidamente duas vezes e em caso de falha, piscam lentamente três vezes. A utilização dos leds facilita ao usuário identificar se o conjunto está conectado à rede e enviando corretamente os dados.
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/0ec7cb3a-186d-43c0-bf80-b84fb3173e35" width="500px" />
+  <p><em>Lógica da coleta e envio dos dados</em></p>
+</div>
 
 ### Ambiente de desenvolvimento
 
