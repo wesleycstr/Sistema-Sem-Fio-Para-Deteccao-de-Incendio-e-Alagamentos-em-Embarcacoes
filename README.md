@@ -1,5 +1,5 @@
 <div align="justify">
-  
+
 # Sistema Sem Fio Para Detecçao de Incêndio e Alagamentos em Embarcações
 Trabalho de Conclusão de Curso em Desenvolvimento para Curso Superior de Tecnologia em Redes de Computadores - IFRN 2026
 <img width="1280" height="720" alt="Imagens do TCC" src="https://github.com/user-attachments/assets/c670eca9-6129-4c8f-bb2c-273c1274db83" />
@@ -28,12 +28,16 @@ Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema s
 
 <details>
 <summary>OBJETIVOS</summary>
-###Objetivos Gerais
+  
+### Objetivos Gerais
+  
 Este trabalho tem como objetivo desenvolver um sistema de baixo custo em rede de computadores voltado à segurança da navegação aquaviária, capaz de realizar o monitoramento contínuo de variáveis ambientais, detectar situações anômalas em tempo real e emitir alertas adequados, contribuindo para a tomada rápida de decisões e para a prevenção de acidentes durante a navegação.
-###Objetivos Específicos
-a) Desenvolver protótipos de sensores capazes de monitorar variáveis ambientais e enviar dados por meio de rede sem fio;
-b) Configurar ambiente com servidor web, banco de dados e grafana;
-c) Desenvolver interface gráfica para acompanhamento por meio de dashboards; e
+
+### Objetivos Específicos
+
+a) Desenvolver protótipos de sensores capazes de monitorar variáveis ambientais e enviar dados por meio de rede sem fio;<br>
+b) Configurar ambiente com servidor web, banco de dados e grafana;<br>
+c) Desenvolver interface gráfica para acompanhamento por meio de dashboards; e<br>
 d) Desenvolver interface gráfica para monitoramento de alarmes.
 </details>
 
