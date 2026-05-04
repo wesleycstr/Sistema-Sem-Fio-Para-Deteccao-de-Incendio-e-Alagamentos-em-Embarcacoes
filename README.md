@@ -5,11 +5,7 @@ Trabalho de Conclusão de Curso em Desenvolvimento para Curso Superior de Tecnol
 <img width="1280" height="720" alt="Imagens do TCC" src="https://github.com/user-attachments/assets/c670eca9-6129-4c8f-bb2c-273c1274db83" />
 <details>
 <summary>RESUMO</summary>
-Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema sem fio 
-voltado ao monitoramento, detecção e emissão de alertas para incêndios e alagamentos em embarcações. 
-O sistema foi concebido a partir da utilização de plataformas microcontroladas do tipo ESP8266, 
-integradas a sensores de temperatura, umidade, gases e nível de água. A interface de monitoramento 
-foi desenvolvida por meio do Grafana e a comunicação é realizada através de uma rede ad-hoc formada entre os sensores.
+Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema sem fio  voltado ao monitoramento, detecção e emissão de alertas para incêndios e alagamentos em embarcações.  O sistema foi concebido a partir da utilização de plataformas microcontroladas do tipo ESP8266 integradas a sensores de temperatura, umidade, gases e nível de água. O monitoramento é realizado por meio de plataforma própria e por dashboads do Grafana.
 </details>
 
 <details>
@@ -29,6 +25,18 @@ foi desenvolvida por meio do Grafana e a comunicação é realizada através de 
   de instalação e funcionalidade, descreve-se como desenvolver um sistema utilizando plataformas microcontroladas 
   e diferentes sensores, capazes de monitorar e identificar avarias a bordo de embarcações de forma confiável.
 </details>
+
+<details>
+<summary>OBJETIVOS</summary>
+### Objetivos Gerais
+Este trabalho tem como objetivo desenvolver um sistema de baixo custo em rede de computadores voltado à segurança da navegação aquaviária, capaz de realizar o monitoramento contínuo de variáveis ambientais, detectar situações anômalas em tempo real e emitir alertas adequados, contribuindo para a tomada rápida de decisões e para a prevenção de acidentes durante a navegação.
+### Objetivos Específicos
+a) Desenvolver protótipos de sensores capazes de monitorar variáveis ambientais e enviar dados por meio de rede sem fio;
+b) Configurar ambiente com servidor web, banco de dados e grafana;
+c) Desenvolver interface gráfica para acompanhamento por meio de dashboards; e
+d) Desenvolver interface gráfica para monitoramento de alarmes.
+</details>
+
 <details>
 <summary>METODOLOGIA</summary>
 Esta seção descreve a estrutura do sistema proposto, bem como os componentes utilizados e a forma como ocorre a coleta, a transmissão e o processamento dos dados. O sistema foi idealizado com o objetivo de oferecer uma solução de baixo custo para monitoramento e alerta de incêndios e alagamentos em embarcações, priorizando simplicidade de implementação e eficiência na detecção.
