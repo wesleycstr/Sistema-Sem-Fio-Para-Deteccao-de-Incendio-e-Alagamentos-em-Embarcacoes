@@ -143,12 +143,37 @@ O ESP8266 conecta-se à rede Wi Fi utilizando a senha fornecida. O sistema monit
 
 A função que envia os dados constrói uma URL completa com os parâmetros da requisição, realiza uma requisição POST e verifica o código de resposta. Em caso de sucesso (HTTP 200), um LED pisca rapidamente duas vezes e em caso de falha, piscam lentamente três vezes. A utilização dos leds facilita ao usuário identificar se o conjunto está conectado à rede e enviando corretamente os dados.
 
+### Conjuntos sensores de incêndio e alagamento
+O conjunto sensor responsável pelo monitoramento de incêndio é formado por uma placa microcontroladora Wemos mini D1, um sensor de temperatura e umidade AHT10 e um sensor de monóxido de carbono MQ-7. As bibliotecas utilizadas foram a ESP8266HTTPClient, a ESP8266WiFi e a Adafruit-AHTX0.
 
-### Ambiente de desenvolvimento
+O protocolo de comunicação utilizado pelo sensor AHT-10 é o I2C enquanto que é o MQ7 utiliza porta analógica.
+
+O conjunto utilizado para detecção de alagamento é composto por uma placa microcontroladora Wemos mini D1 e um sensor de nível de água HW-028. O controlador verifica em intervalos de 5s o estado do sensor de água, que pode indicar presença o ausência de água. Conforme a verificação vai ocorrendo, uma URL é enviada ao servidor com o estado verificado.
+
+Assim como ocorre com o sistema detector de incêndio, um LED serve de indicador visual para indicar sucesso ou falha do envio dos dados.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/38aaaed4-c275-4451-8542-c4fbbc544d1a" width="500px" />
+  <p><em>Conjuntos detectores de incêndio e alagamento</em></p>
+</div>
 
 
-### Implementação do nó sensor
-Cada nó sensor é responsável por coletar os dados dos sensores conectados ao seu microcontrolador, bem como por encaminhar informações provenientes de outros nós quando necessário. Para que este processo aconteça
+### Implementação do servidor
+Para o servidor, adotou-se uma infraestrutura baseada em contêineres Docker, contemplando a execução de um servidor web Apache, um banco de dados MySQL e a plataforma de visualização de dados Grafana. Também foi incluído ferramentas como PHPMyAdmin para gerenciamento do banco de dados e Portainer para gerenciamento dos contêineres.
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/42e908c2-d799-46a3-b1ce-fe90a4f82667" width="500px" />
+  <p><em>Contêineres utilizados no projeto</em></p>
+</div>
+
+Todos os dados coletados pelos sensores são armazenados no banco de dados MySQL e são disponibilizados ao usuário por meio da plataforma Grafana e por meio de uma interface elaborada para visualização de alertas. A utilização do Grafana permite a criação de dashboards interativos e dinâmicos, possibilitando a visualização em tempo real das variáveis monitoradas, bem como a análise histórica dos dados coletados, contribuindo para a identificação de padrões e a detecção de eventos críticos. A interface de visualização de alertas visa proporcionar facilidade de visualização e configuração de alertas ao operador.
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/6f8dde54-9026-4e5a-89ec-8e541297aa07" width="500px" />
+  <p><em>Interface do grafana</em></p>
+</div>
+
+### Implementação de alerta
+Para a geração de alertas foi implementado uma interface própria onde é possível visualizar 
 
 ### Comunicação e rede
 
