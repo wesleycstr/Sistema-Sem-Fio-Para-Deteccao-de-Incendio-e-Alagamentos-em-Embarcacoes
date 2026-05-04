@@ -10,20 +10,13 @@ Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema s
 
 <details>
 <summary>INTRODUÇÃO</summary>
-  Detectar rapidamente incêndios e alagamentos em embarcações é fundamental para permitir
-  uma resposta eficaz a esses acontecimentos, pois atrasos nessa identificação podem causar danos irreversíveis 
-  aos equipamentos, à tripulação e ao meio ambiente. Incidentes como este, quando acontecem em ambientes marítimos, 
-  costumam trazer grandes problemas devido ao fato de todos estarem isolados em alto mar e sem acesso a serviços 
-  essenciais como por exemplo, socorro médico e bombeiros. Quando a fumaça ou a água se espalham pelos corredores, 
-  fica difícil definir com precisão onde está o foco do problema, retardando assim o início da ação de combate. 
-  Em instituições doutrinárias como a Marinha do Brasil, considera-se que o ideal é descobrir a ocorrência em até 
-  três minutos após o seu início sob possibilidade de tornar-se algo fora de controle. Uma maneira de acelerar essa 
-  detecção seria através de sistemas automatizados que monitoram e avisam sobre esses eventos. No entanto, tais sistemas 
-  geralmente apresentam alto custo e complexidade de implementação quando levamos em consideração a ampla variedade dos 
-  meios navais existentes na atualidade. Este artigo propõe uma alternativa de baixo custo e grande potencial baseada no 
-  uso de dispositivos Internet of Things (IoT) em uma rede sem fio e Grafana. Considerando critérios como custo, facilidade 
-  de instalação e funcionalidade, descreve-se como desenvolver um sistema utilizando plataformas microcontroladas 
-  e diferentes sensores, capazes de monitorar e identificar avarias a bordo de embarcações de forma confiável.
+Detectar rapidamente incêndios e alagamentos em embarcações é fundamental para permitir uma resposta eficaz a esses acontecimentos, pois atrasos nessa identificação podem causar danos irreversíveis aos equipamentos, à tripulação e ao meio ambiente [1]. Incidentes como este, quando acontecem em ambientes marítimos, costumam trazer grandes problemas devido ao fato de todos estarem isolados em alto mar e sem acesso a serviços essenciais como por exemplo, socorro médico e bombeiros. 
+
+Quando a fumaça ou a água se espalham pelos corredores, fica difícil definir com precisão onde está o foco do problema, retardando assim o início da ação de combate. Em instituições doutrinárias como a Marinha do Brasil, considera-se que o ideal é descobrir a ocorrência em até três minutos após o seu início sob possibilidade de tornar-se um evento fora de controle [2]. 
+
+Uma maneira de acelerar essa detecção seria através de sistemas automatizados que monitoram e avisam sobre esses eventos. No entanto, tais sistemas geralmente apresentam alto custo e complexidade de implementação quando levamos em consideração a ampla variedade dos meios navais existentes na atualidade. 
+
+Este trabalho propõe uma alternativa de baixo custo e grande potencial baseada no uso de dispositivos Internet of Things (IoT) em uma rede sem fio e Grafana. Considerando critérios como custo, facilidade de instalação e funcionalidade, descreve-se como desenvolver um sistema utilizando plataformas microcontroladas e diferentes sensores, capazes de monitorar e identificar avarias a bordo de embarcações de forma confiável.
 </details>
 
 <details>
@@ -46,23 +39,81 @@ d) Desenvolver interface gráfica para monitoramento de alarmes.
 Esta seção descreve a estrutura do sistema proposto, bem como os componentes utilizados e a forma como ocorre a coleta, a transmissão e o processamento dos dados. O sistema foi idealizado com o objetivo de oferecer uma solução de baixo custo para monitoramento e alerta de incêndios e alagamentos em embarcações, priorizando simplicidade de implementação e eficiência na detecção.
   
 ### Visão geral do sistema
-O sistema desenvolvido é composto por módulos de sensoriamento, comunicação e processamento, integrados de forma a permitir o monitoramento contínuo das condições ambientais da embarcação. Os sensores e microcontroladores são responsáveis pela coleta e envio de dados ao servidor por meio de protocolo HTTP. Também foi implementado uma rede ad-hoc entre os sensores de forma a manter a comunicação descentralizada e dinâmica. Dessa forma é possível estabelecer tráfego de dados por meio de rede sem fio, mesmo em embarcações construídas predominantemente com chapas de ferro, para se evitar o efeito de blindagem (Gaiola de Faraday) que bloqueia a passagem de ondas de rádio (RF) e dificulta a comunicação sem fio.
+O sistema desenvolvido é estruturado em três processos principais: sensoriamento, comunicação e processamento. Esses processos são integrados de forma a viabilizar o monitoramento contínuo e em tempo real das condições ambientais da embarcação. 
 
-Os dados coletados são enviados a um servidor e armazenados em banco de dados, possibilitando análises históricas, identificação de padrões que possam indicar situações de risco. Esses dados armazenados também são utiliados para apresentação de dashboards por meio do Grafana.
+O processo de sensoriamento é composto por sensores e microcontroladores responsáveis pela aquisição periódica de variáveis como temperatura, concentração de gases e presença de água. Esses dispositivos realizam o pré-processamento dos dados e efetuam sua transmissão ao servidor por meio de uma rede sem fio e protocolo HTTP para processamento.
 
-Os usuários podem definir, através do Grafana, limiares de segurança para cada variável monitorada, de modo que, ao serem ultrapassados, mecanismos automáticos de alerta são acionados.
+Durante o processamento, os dados coletados são recebidos por um servidor, onde são tratados e armazenados em um banco de dados. Essa abordagem permite a organização estruturada das informações, como a identificação dos sensores e variáveis monitoradas. Como resultado, torna-se possível a realização de análises históricas, correlação entre variáveis e identificação de padrões que possam indicar situações de risco ou comportamento anômalo do ambiente monitorado.
 
-<img width="1582" height="899" alt="image" src="https://github.com/user-attachments/assets/bdfb6c97-015d-47d6-b0b3-e681c7fcd2d2" />
+Os dados armazenados também são integrados à plataforma de visualização Grafana, que possibilita a construção de dashboards interativos e personalizáveis. Por meio desses painéis, os usuários podem acompanhar em tempo real as condições monitoradas, além de consultar o histórico de medições de forma intuitiva. Além da visualização proporcionada pelo Grafana, foi elaborado uma interface própria para configuração e visualização de alarmes de forma intuitiva.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/0e04abd8-e761-4db8-9313-1bac6a155dc1"" width="300px" />
+  <p><em>Diagrama simplificado do sistema</em></p>
+</div>
+
 
 ### Componentes de hardware
-A arquitetura de hardware foi definida considerando disponibilidade, custo e compatibilidade entre os dispositivos. O sistema utiliza microcontroladores baseados no módulo ESP8266, escolhido devido à sua capacidade de processamento e conectividade Wi-Fi integrada. Este módulo possui 11 pinos de entrada/saída digital e 01 analógica, trabalha com com alimentação de 3,3V e suporta protocolos UART, I2C e SPI.
+A arquitetura de hardware foi definida considerando disponibilidade, custo e compatibilidade entre os dispositivos. O sistema utiliza microcontroladores baseados no módulo ESP8266 Wemos Mini D1, escolhido devido à sua capacidade de processamento e conectividade Wi-Fi integrada. Este módulo possui 11 pinos de entrada/saída digital e 01 analógica, trabalha com com alimentação de 3,3V e suporta protocolos UART, I2C e SPI.
 
 Para o monitoramento de gases, foi empregado um sensor do tipo MQ-7, adequado para detecção de monóxido de carbono (CO). Este sensor possui uma faixa de detecção de 10 a 10.000 ppm (partes por milhão), possui saída análogica e digital e trabalha com tensão de alimentação entre 3V e 5V DC.
 
 A medição de temperatura é realizada por meio do sensor AHT10, que apresenta boa precisão e estabilidade para aplicações embarcadas. Este sensor possui uma faixa de medição de temperatura de -40°C a +80°C com uma precisão de ±0,3°C, trabalha com protocolo I2C e alimentação entre 1,8V e 3,6V.
 
-Por fim, para monitoramento de alagamento foi utilizado o sensor de nível de água HW-028 que possui saída digital que indica presença ou ausência de água e trabalha com tensão de 3,3V a 5V. Também foi acrescentado um módulo relé com microcontrolador e conectividade Wi-Fi integrada para acionamento de dispositivos externos, como alarmes sonoros, permitindo uma resposta imediata em situações críticas. A tabela 01 demonstra o custo de aquisição aproximado para cada dispositivo.
-<img width="864" height="376" alt="image" src="https://github.com/user-attachments/assets/b551c145-b13c-465f-8e89-730b33d56b99" />
+Por fim, para monitoramento de alagamento foi utilizado o sensor de nível de água HW-028 que possui saída digital que indica presença ou ausência de água e trabalha com tensão de 3,3V a 5V. 
+
+Também foi acrescentado um módulo relé com microcontrolador e conectividade Wi-Fi integrada para acionamento de dispositivos externos, como alarmes sonoros, permitindo uma resposta imediata em situações críticas.
+<div align="center">
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Descrição</th>
+        <th>Preço médio (R$)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Placa Arduíno WeMos D1 Mini</td>
+        <td>30,00</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Sensor de temperatura e umidade AHT-10</td>
+        <td>15,00</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Sensor de Monóxido de Carbono MQ-7</td>
+        <td>20,00</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Sensor de nível de água HW-028</td>
+        <td>20,00</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Fonte de alimentação 5V</td>
+        <td>15,00</td>
+      </tr>
+    </tbody>
+  </table>
+  <p align="center">
+    <em>Preço médio dos dispositivos utilizados no sistema.</em>
+  </p>
+</div>
+Além dos componentes apresentados, é necessário um servidor, que poderá ser um computador com sistema operacional Linux conectado a uma rede wireless e um alarme que possa ser acionado por relé. A figura a seguir demonstra a arquitetura de hardware proposta.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/f3c701cb-3809-4b54-8a86-dddc79d24f4d" width="300px" />
+  <p><em>Arquitetura de hardware</em></p>
+</div>
+
+### Coleta e envio de dados
+A obtenção dos dados de temperatura, gases e existência de água decorrente de alagamentos se dá por meio de unidades compostas por sensores conectados a microcontroladores. O sistema foi configurado de modo a executar leituras e transmissões em intervalos de 5 segundos, visando sustentar uma frequência elevada de amostragem, o que por sua vez coopera para que haja uma resposta mais ágil no enfrentamento de situações críticas.
+
+Os dados que são coletados seguem para o servidor através do protocolo HTTP, fazendo uso de uma rede sem fio. A fim de mitigar eventuais ocorrências de interferências dentro do sistema, foi implementado um pequeno atraso aleatório antes do envio das informações, reduzindo assim a probabilidade de colisões entre os dispositivos que dividem o mesmo canal de comunicação. Além disso, cada unidade conta com um identificador exclusivo, o qual é inserido em cada pacote que se envia, possibilitando ao servidor que reconheça a procedência dos dados e realize o seu armazenamento de maneira adequada junto ao banco de dados.
+
 
 ### Processamento dos dados
 Os dados obtidos pelos sensores são encaminhados ao servidor e armazenados em um banco de dados. Nesse ambiente, os dados são recepcionados por um script que verifica a origem, filtra as informações e inseri-as no banco de dados.
