@@ -156,7 +156,6 @@ Assim como ocorre com o sistema detector de incêndio, um LED serve de indicador
   <p><em>Conjuntos detectores de incêndio e alagamento</em></p>
 </div>
 
-
 ### Implementação do servidor
 Para o servidor, adotou-se uma infraestrutura baseada em contêineres Docker, contemplando a execução de um servidor web Apache, um banco de dados MySQL e a plataforma de visualização de dados Grafana. Também foi incluído ferramentas como PHPMyAdmin para gerenciamento do banco de dados e Portainer para gerenciamento dos contêineres.
 
@@ -173,15 +172,26 @@ Todos os dados coletados pelos sensores são armazenados no banco de dados MySQL
 </div>
 
 ### Implementação de alerta
-Para a geração de alertas foi implementado uma interface própria onde é possível visualizar 
+Para a geração de alertas, foi desenvolvida uma interface própria que possibilita a visualização em tempo real dos dados coletados pelos sensores, bem como a configuração de limites específicos para cada parâmetro monitorado. De maneira intuitiva, o sistema informa ao usuário, por meio de alertas visuais e sonoros, a ocorrência de situações que estejam fora dos valores estabelecidos, permitindo uma resposta mais rápida diante de possíveis riscos.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/13d5be64-ece1-48ea-b643-147198b7790c" width="500px" />
+  <p><em>Interface de alertas</em></p>
+</div>
+</details>
+<details>
+<summary>TESTES</summary>
+Para a execução dos testes, foram empregados circuitos montados em protoboards. As avaliações foram conduzidas em um ambiente controlado e em um ambiente destinado para prática de treinamento de combate a incêndio e alagamentos utilizado pela Marinha.
 
-### Comunicação e rede
+### Testes realizados em ambiente controla
 
-### Servidor e banco de dados
-
-### Integração com visualização e alertas
-
-### Prototipagem e Testes
+### Testes realizados em simuladores de incêndio e alagamento
 
 </details>
+<details>
+<summary>RESULTADOS</summary>
+
+
+</details>
+
+
 </div>
