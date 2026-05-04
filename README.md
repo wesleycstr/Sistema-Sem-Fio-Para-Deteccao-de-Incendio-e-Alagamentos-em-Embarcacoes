@@ -135,14 +135,14 @@ A lógica do programa é dividida em três partes fundamentais: conexão com a r
 
 Cada conjunto sensor é responsável por coletar os dados dos sensores conectados ao seu microcontrolador, bem como por encaminhar informações provenientes de outros nós quando necessário.
 
-O ESP8266 conecta-se à rede Wi Fi utilizando a senha fornecida. O sistema monitora continuamente o estado da conexão Wi-Fi no loop principal e tenta reconectar automaticamente caso a conexão seja perdida. Uma função é responsável por enviar os dados coletados para um servidor PHP que contém um script responsável pela recepção e inserção dos dados no banco de dados. 
-
-A função que envia os dados constrói uma URL completa com os parâmetros da requisição, realiza uma requisição POST e verifica o código de resposta. Em caso de sucesso (HTTP 200), um LED pisca rapidamente duas vezes e em caso de falha, piscam lentamente três vezes. A utilização dos leds facilita ao usuário identificar se o conjunto está conectado à rede e enviando corretamente os dados.
-
+O ESP8266 conecta-se à rede Wi Fi utilizando a senha fornecida. O sistema monitora continuamente o estado da conexão Wi-Fi no loop principal e tenta reconectar automaticamente caso a conexão seja perdida. Uma função é responsável por enviar os dados coletados para um servidor PHP que contém um script responsável pela recepção e inserção dos dados no banco de dados.
 <div align="center">
   <img src="https://github.com/user-attachments/assets/0ec7cb3a-186d-43c0-bf80-b84fb3173e35" width="500px" />
   <p><em>Lógica da coleta e envio dos dados</em></p>
 </div>
+
+A função que envia os dados constrói uma URL completa com os parâmetros da requisição, realiza uma requisição POST e verifica o código de resposta. Em caso de sucesso (HTTP 200), um LED pisca rapidamente duas vezes e em caso de falha, piscam lentamente três vezes. A utilização dos leds facilita ao usuário identificar se o conjunto está conectado à rede e enviando corretamente os dados.
+
 
 ### Ambiente de desenvolvimento
 
