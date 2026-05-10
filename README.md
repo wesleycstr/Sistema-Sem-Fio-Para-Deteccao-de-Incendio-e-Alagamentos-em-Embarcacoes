@@ -179,6 +179,51 @@ Para a geração de alertas, foi desenvolvida uma interface própria que possibi
 </div>
 </details>
 <details>
+<summary>SEGURANÇA</summary>
+  
+## Camadas de Segurança Implementadas no Sistema IoT de Monitoramento
+
+Com o objetivo de aumentar a confiabilidade, integridade e confidencialidade das informações transmitidas pelos sensores, foram implementadas múltiplas camadas de segurança no sistema de monitoramento IoT desenvolvido. A arquitetura é composta por dispositivos embarcados ESP8266 responsáveis pela aquisição de dados ambientais, um servidor web Apache/PHP executado em containers Docker e um banco de dados MariaDB utilizado para armazenamento das medições.
+
+### Comunicação Segura via HTTPS/TLS
+
+A comunicação entre os dispositivos e o servidor foi configurada para utilizar o protocolo HTTPS em substituição ao HTTP convencional. Dessa forma, os dados trafegam criptografados através do protocolo TLS (Transport Layer Security), reduzindo significativamente os riscos de interceptação, captura e leitura indevida das informações transmitidas pela rede.
+
+### Autenticação de Dispositivos por Token
+
+Foi implementado um mecanismo de autenticação baseado em tokens exclusivos para cada dispositivo sensor. Durante o envio das medições, o ESP8266 inclui um identificador autenticado nos cabeçalhos HTTP da requisição, permitindo que o servidor valide a origem dos dados recebidos e rejeite requisições provenientes de dispositivos não autorizados.
+
+### Validação de Integridade dos Dados
+
+Para garantir a integridade das informações transmitidas, foi utilizada uma assinatura criptográfica baseada em hash SHA-1 aplicada sobre o conteúdo da mensagem, timestamp e chave secreta compartilhada entre cliente e servidor. O servidor recalcula localmente a assinatura recebida e compara os resultados obtidos, assegurando que os dados não sofreram alterações durante o tráfego na rede.
+
+### Proteção Contra Ataques de Replay
+
+Outra camada implementada foi a proteção contra ataques de replay. Cada pacote enviado pelo dispositivo contém um timestamp associado ao instante de geração da mensagem. O servidor valida esse valor temporal e rejeita requisições antigas ou fora da janela de tempo configurada, impedindo a reutilização maliciosa de pacotes previamente capturados.
+
+### Proteção Contra SQL Injection
+
+No lado do servidor, todas as operações de inserção de dados passaram a utilizar prepared statements. Essa abordagem elimina vulnerabilidades relacionadas a ataques de SQL Injection, impedindo a execução de comandos SQL maliciosos enviados através das requisições recebidas pela aplicação.
+
+### Isolamento do Banco de Dados
+
+O banco de dados MariaDB foi configurado em uma rede interna Docker, não sendo exposto diretamente à rede externa. Dessa forma, apenas os containers autorizados conseguem estabelecer comunicação com o banco de dados, reduzindo significativamente a superfície de ataque da aplicação.
+
+### Isolamento de Serviços com Docker
+
+A infraestrutura baseada em containers Docker contribuiu para o aumento da segurança e confiabilidade do sistema. Os serviços de banco de dados, servidor web Apache/PHP, Grafana e phpMyAdmin foram segregados em containers independentes, permitindo melhor isolamento de processos, controle de acesso e gerenciamento dos serviços da aplicação.
+
+### Persistência Segura dos Dados
+
+Foram implementados volumes persistentes Docker para armazenamento permanente das informações do banco de dados e das configurações do Grafana. Essa abordagem garante maior confiabilidade operacional e evita perda de dados em casos de reinicialização ou recriação dos containers.
+
+### Considerações Finais
+
+As medidas implementadas proporcionam uma arquitetura significativamente mais robusta em comparação com soluções IoT convencionais baseadas em HTTP sem autenticação. O sistema passa a oferecer mecanismos de criptografia, autenticação, validação de integridade, proteção contra replay, mitigação de SQL Injection e isolamento de serviços, aumentando a confiabilidade e segurança operacional do monitoramento embarcado.
+
+
+</details>
+<details>
 <summary>TESTES</summary>
 Para a execução dos testes, foram empregados circuitos montados em protoboards. As avaliações foram conduzidas em um ambiente controlado e em um ambiente destinado para prática de treinamento de combate a incêndio e alagamentos utilizado pela Marinha.
 
