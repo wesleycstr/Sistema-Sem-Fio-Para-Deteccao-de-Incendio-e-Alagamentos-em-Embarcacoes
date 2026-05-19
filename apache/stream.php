@@ -182,9 +182,28 @@ while($row = $result->fetch_assoc()){
 
         <td>{$row['data_hora']}</td>
 
-        <td> <button class='btnConfig' onclick='abrirModal( {$row['id']})'>
+        <td>
 
-⚙️
+        <button class='btnConfig'
+        onclick='abrirModal({$row['id']})'>
+
+        ⚙️
+
+        </button>
+
+        </td>
+
+        <td>
+
+        <button
+        class='btnExcluir'
+        onclick='excluirSensor({$row['id']})'>
+
+        🗑️
+
+        </button>
+
+        </td>
 
 </button>
 
@@ -203,7 +222,7 @@ if($erroGeral){
 
     <tr>
 
-        <td colspan='8'
+        <td colspan='9'
             style='background:#b71c1c;
                    color:white;
                    text-align:center;
