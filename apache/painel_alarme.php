@@ -137,6 +137,49 @@ tr{
 
 }
 
+.btnExcluir{
+
+    background:#8b0000;
+    border:none;
+    color:white;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    transition:0.3s;
+
+}
+
+.btnExcluir:hover{
+
+    background:#c62828;
+
+}
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#1e1e1e;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#555;
+    border-radius:10px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#777;
+
+}
+
 </style>
 
 </head>
@@ -144,6 +187,17 @@ tr{
 <body>
 
 <div class="tabs">
+
+<div style="margin-bottom:20px;">
+
+<button class="btnConfig"
+onclick="abrirCadastroSensor()">
+
+➕ Cadastrar Sensor
+
+</button>
+
+</div>
 
 <button class="tabButton active"
 onclick="abrirAba('sensores')">
@@ -180,6 +234,7 @@ Logs
 <th>CO</th>
 <th>Status</th>
 <th>Data/Hora</th>
+<th></th>
 <th></th>
 
 </tr>
@@ -540,6 +595,267 @@ function atualizarLogs(){
 setInterval(atualizarLogs, 2000);
 
 atualizarLogs();
+
+</script>
+
+<!-- MODAL CADASTRO SENSOR -->
+
+<div id="modalSensor"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+z-index:999;
+">
+
+<div style="
+background:#1e1e1e;
+padding:30px;
+border-radius:10px;
+width:90%;
+max-width:400px;
+max-height:90vh;
+overflow-y:auto;
+box-sizing:border-box;
+">
+
+<h2>Cadastrar Sensor</h2>
+
+<label>Nome do Sensor</label>
+<input type="text"
+id="novoNome"
+class="campo">
+
+<label>Localização</label>
+<input type="text"
+id="novaLocalizacao"
+class="campo">
+
+<label>Device Token</label>
+<input
+type="text"
+id="novoToken"
+class="campo">
+
+<label>Chave Secreta</label>
+<input type="text"
+id="novaChave"
+class="campo">
+
+<label>Temperatura Máx</label>
+<input type="number"
+id="novoTempMax"
+class="campo"
+value="40">
+
+<label>Umidade Min</label>
+<input type="number"
+id="novoUmiMin"
+class="campo"
+value="20">
+
+<label>Umidade Máx</label>
+<input type="number"
+id="novoUmiMax"
+class="campo"
+value="80">
+
+<label>CO Máx</label>
+<input type="number"
+id="novoGasMax"
+class="campo"
+value="100">
+
+<label>
+
+<input type="checkbox"
+id="novoAlarmeSonoro">
+
+Ativar alarme sonoro
+
+</label>
+
+<br><br>
+
+<button onclick="salvarSensor()">
+
+Salvar Sensor
+
+</button>
+
+<button onclick="fecharCadastroSensor()">
+
+Cancelar
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function abrirCadastroSensor(){
+
+    document.getElementById("modalSensor")
+    .style.display = "flex";
+
+}
+
+function fecharCadastroSensor(){
+
+    document.getElementById("modalSensor")
+    .style.display = "none";
+
+}
+
+function salvarSensor(){
+
+    const nome =
+    document.getElementById("novoNome").value;
+
+    const localizacao =
+    document.getElementById("novaLocalizacao").value;
+
+    const token =
+    document.getElementById("novoToken").value;
+
+    const chave =
+    document.getElementById("novaChave").value;
+
+    const tempMax =
+    document.getElementById("novoTempMax").value;
+
+    const umiMin =
+    document.getElementById("novoUmiMin").value;
+
+    const umiMax =
+    document.getElementById("novoUmiMax").value;
+
+    const gasMax =
+    document.getElementById("novoGasMax").value;
+
+    const alarmeSonoro =
+
+    document.getElementById(
+    "novoAlarmeSonoro"
+    ).checked ? 1 : 0;
+
+    fetch(
+
+        window.location.origin +
+        "/cadastrar_sensor.php",
+
+    {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body:
+
+        "nome=" + encodeURIComponent(nome) +
+
+        "&localizacao=" +
+        encodeURIComponent(localizacao) +
+
+        "&token=" +
+        encodeURIComponent(token) +
+
+        "&chave=" +
+        encodeURIComponent(chave) +
+
+        "&tempMax=" + tempMax +
+
+        "&umiMin=" + umiMin +
+
+        "&umiMax=" + umiMax +
+
+        "&gasMax=" + gasMax +
+
+        "&alarmeSonoro=" +
+        alarmeSonoro
+
+    })
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+        fecharCadastroSensor();
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+    });
+
+}
+
+</script>
+
+<script>
+
+function excluirSensor(id){
+
+    const confirmar = confirm(
+
+        "Deseja realmente excluir este sensor?"
+
+    );
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+    fetch(
+
+        window.location.origin +
+        "/excluir_sensor.php",
+
+    {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body:"id=" + id
+
+    })
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+    });
+
+}
 
 </script>
 
