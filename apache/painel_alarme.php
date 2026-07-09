@@ -180,6 +180,96 @@ tr{
 
 }
 
+.painelGrid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fill,minmax(230px,1fr));
+
+    gap:18px;
+
+}
+
+.cardSensor{
+
+    border-radius:12px;
+
+    padding:18px;
+
+    color:white;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:0 0 10px rgba(0,0,0,.4);
+
+}
+
+.cardSensor:hover{
+
+    transform:scale(1.03);
+
+}
+
+.cardTitulo{
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    margin-bottom:15px;
+
+}
+
+.cardValor{
+
+    font-size:17px;
+
+    margin:8px 0;
+
+}
+
+.cardStatus{
+
+    margin-top:15px;
+
+    text-align:center;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+.normal{
+
+    background:#2e7d32;
+
+}
+
+.atencao{
+
+    background:#f9a825;
+
+    color:black;
+
+}
+
+.offline{
+
+    background:#616161;
+
+}
+
+.cardSensor.alarme{
+
+    background:#c62828;
+    animation:piscar 1s infinite;
+
+}
+
 </style>
 
 </head>
@@ -211,6 +301,11 @@ onclick="abrirAba('logs')">
 
 Logs
 
+</button>
+
+<button class="tabButton"
+onclick="abrirAba('painel')">
+🖥 Painel
 </button>
 
 </div>
@@ -263,10 +358,10 @@ Logs
 
 <tr>
 
-<th>ID</th>
-<th>Sensor</th>
-<th>Data/Hora</th>
 <th>Evento</th>
+<th>ID</th>
+<th>Data/Hora</th>
+<th>Registro</th>
 
 </tr>
 
@@ -279,6 +374,16 @@ Logs
 </table>
 
 </div>
+
+</div>
+
+<!-- ABA PAINEL -->
+
+<div id="abaPainel" class="aba" style="display:none;">
+
+    <div id="painelSensores" class="painelGrid">
+
+    </div>
 
 </div>
 
@@ -477,45 +582,36 @@ setInterval(verificarAlarmes, 1000);
 }, { once: true });
 </script>
 <script>
-    function abrirAba(aba){
+ function abrirAba(nome){
 
-    /* esconder abas */
+    // Esconde todas as abas
+    document.getElementById("abaSensores").style.display = "none";
+    document.getElementById("abaLogs").style.display = "none";
+    document.getElementById("abaPainel").style.display = "none";
 
-    document.getElementById("abaSensores")
-    .style.display = "none";
-
-    document.getElementById("abaLogs")
-    .style.display = "none";
-
-    /* remover ativo */
-
+    // Remove o botão ativo
     document.querySelectorAll(".tabButton")
-    .forEach(btn => {
+        .forEach(btn => btn.classList.remove("active"));
 
-        btn.classList.remove("active");
+    switch(nome){
 
-    });
+        case "sensores":
 
-    /* mostrar aba correta */
+            document.getElementById("abaSensores").style.display = "block";
+            document.querySelectorAll(".tabButton")[0].classList.add("active");
+            break;
 
-    if(aba === "sensores"){
+        case "logs":
 
-        document.getElementById("abaSensores")
-        .style.display = "block";
+            document.getElementById("abaLogs").style.display = "block";
+            document.querySelectorAll(".tabButton")[1].classList.add("active");
+            break;
 
-        document.querySelectorAll(".tabButton")[0]
-        .classList.add("active");
+        case "painel":
 
-    }
-
-    if(aba === "logs"){
-
-        document.getElementById("abaLogs")
-        .style.display = "block";
-
-        document.querySelectorAll(".tabButton")[1]
-        .classList.add("active");
-
+            document.getElementById("abaPainel").style.display = "block";
+            document.querySelectorAll(".tabButton")[2].classList.add("active");
+            break;
     }
 
 }
@@ -523,51 +619,40 @@ setInterval(verificarAlarmes, 1000);
 
 <script>
 
-/* ABAS */
-
-function abrirAba(nome){
-
-    document.getElementById("abaSensores")
-    .style.display = "none";
-
-    document.getElementById("abaLogs")
-    .style.display = "none";
-
-    document.querySelectorAll(".tabButton")
-    .forEach(btn => btn.classList.remove("active"));
-
-    if(nome == "sensores"){
-
-        document.getElementById("abaSensores")
-        .style.display = "block";
-
-        document.querySelectorAll(".tabButton")[0]
-        .classList.add("active");
-
-    }
-
-    if(nome == "logs"){
-
-        document.getElementById("abaLogs")
-        .style.display = "block";
-
-        document.querySelectorAll(".tabButton")[1]
-        .classList.add("active");
-
-    }
-
-}
 
 /* STREAM SENSORES */
 
 const source = new EventSource("stream.php");
 
-source.onmessage = function(event){
+/*source.onmessage = function(event){
+
+    const dados = JSON.parse(event.data);
 
     document.getElementById("tabela").innerHTML =
-    event.data;
+    dados.tabela;
 
-};
+    document.getElementById("painelSensores").innerHTML =
+    dados.cards;
+
+};*/
+
+source.onmessage = function(event){
+
+    console.log(event.data);
+
+    const dados = JSON.parse(event.data);
+
+    console.log(dados);
+
+    console.log(dados.cards);
+
+    document.getElementById("tabela").innerHTML =
+    dados.tabela;
+
+    document.getElementById("painelSensores").innerHTML =
+    dados.cards;
+
+}
 
 source.onerror = function(error){
 
@@ -627,20 +712,20 @@ box-sizing:border-box;
 
 <h2>Cadastrar Sensor</h2>
 
-<label>Nome do Sensor</label>
+<!--<label>Nome do Sensor</label>
 <input type="text"
 id="novoNome"
+class="campo">-->
+
+<label>Identificador</label>
+<input
+type="text"
+id="novoToken"
 class="campo">
 
 <label>Localização</label>
 <input type="text"
 id="novaLocalizacao"
-class="campo">
-
-<label>Device Token</label>
-<input
-type="text"
-id="novoToken"
 class="campo">
 
 <label>Chave Secreta</label>
@@ -717,8 +802,8 @@ function fecharCadastroSensor(){
 
 function salvarSensor(){
 
-    const nome =
-    document.getElementById("novoNome").value;
+    /*const nome =
+    document.getElementById("novoNome").value;*/
 
     const localizacao =
     document.getElementById("novaLocalizacao").value;
@@ -763,7 +848,7 @@ function salvarSensor(){
 
         body:
 
-        "nome=" + encodeURIComponent(nome) +
+        /*"nome=" + encodeURIComponent(nome) +*/
 
         "&localizacao=" +
         encodeURIComponent(localizacao) +
