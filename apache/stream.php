@@ -27,6 +27,7 @@ $sql = "
 
 SELECT 
     sensores.id,
+    sensores.device_token,
     sensores.localizacao,
     alarme.status,
     dados.temperatura,
@@ -57,7 +58,7 @@ ORDER BY sensores.id
 $result = $conn->query($sql);
 
 $html = "";
-
+$cards = "";
 $erroGeral = false;
 
 while($row = $result->fetch_assoc()){
@@ -104,7 +105,8 @@ while($row = $result->fetch_assoc()){
         registrarLog(
             $conn,
             $row['id'],
-            "Sensor {$row['id']} ficou OFFLINE"
+            //"Sensor {$row['nome']} ficou OFFLINE"
+            "Sensor ficou OFFLINE"
         );
 
         $conn->query("
@@ -129,7 +131,8 @@ while($row = $result->fetch_assoc()){
             registrarLog(
                 $conn,
                 $row['id'],
-                "Sensor {$row['id']} voltou ONLINE"
+                //"Sensor {$row['nome']} voltou ONLINE"
+                "Sensor voltou ONLINE"
             );
 
             $conn->query("
@@ -162,13 +165,84 @@ while($row = $result->fetch_assoc()){
                 break;
         }
 
+
     }
+
+           /* ===========================
+   COR DOS CARDS
+=========================== */
+
+$classeCard = "normal";
+
+if($offline){
+
+    $classeCard = "offline";
+
+}else{
+
+    switch($row['status']){
+
+        case 1:
+            $classeCard = "normal";
+            break;
+
+        case 2:
+            $classeCard = "atencao";
+            break;
+
+        case 3:
+            $classeCard = "alarme";
+            break;
+
+    }
+
+}
+
+/* ===========================
+   CARD DO SENSOR
+=========================== */
+
+$cards .= "
+<div class='cardSensor $classeCard'
+onclick='abrirModal({$row['id']})'>
+
+
+<div class='cardTitulo'>
+
+{$row['localizacao']}
+
+</div>
+
+<div class='cardValor'>
+🌡 {$temperatura} °C
+</div>
+
+<div class='cardValor'>
+💧 {$umidade} %
+</div>
+
+<div class='cardValor'>
+☁ {$gas} ppm
+</div>
+
+<div class='cardValor'>
+🕒 {$row['data_hora']}
+</div>
+
+<div class='cardStatus'>
+{$statusTexto}
+</div>
+
+</div>
+
+";
+
 
     $html .= "
 
     <tr class='$classe' style='background-color:$cor'>
 
-        <td>{$row['id']}</td>
+        <td>{$row['device_token']}</td>
 
         <td>{$row['localizacao']}</td>
 
@@ -205,8 +279,6 @@ while($row = $result->fetch_assoc()){
 
         </td>
 
-</button>
-
 </td>
 
     </tr>
@@ -238,7 +310,15 @@ if($erroGeral){
     " . $html;
 }
 
-echo "data: " . str_replace("\n", "", $html) . "\n\n";
+$dados = [
+
+    "tabela" => str_replace("\n","",$html),
+
+    "cards" => str_replace("\n","",$cards)
+
+];
+
+echo "data: " . json_encode($dados) . "\n\n";
 
 flush();
 
