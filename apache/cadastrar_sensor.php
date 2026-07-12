@@ -2,7 +2,7 @@
 
 include 'conexao.php';
 
-$nome = $_POST['nome'] ?? '';
+//$nome = $_POST['nome'] ?? '';
 
 $localizacao =
 $_POST['localizacao'] ?? '';
@@ -30,11 +30,11 @@ $_POST['alarmeSonoro'] ?? 0;
 
 /* validações */
 
-if(empty($nome)){
+/*if(empty($nome)){
 
     die("Nome obrigatório");
 
-}
+}*/
 
 if(empty($localizacao)){
 
@@ -62,7 +62,6 @@ INSERT INTO sensores
 
 (
 
-    nome,
     localizacao,
     chave_secreta,
     device_token,
@@ -78,7 +77,7 @@ VALUES
 
 (
 
-    ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?
 
 )
 
@@ -86,12 +85,11 @@ VALUES
 
 $stmt->bind_param(
 
-    "ssssddddi",
+    "sssddddi",
 
-    $nome,
     $localizacao,
-    $token,
     $chave,
+    $token,
     $tempMax,
     $umiMin,
     $umiMax,
