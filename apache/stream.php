@@ -67,9 +67,17 @@ while($row = $result->fetch_assoc()){
     $cor = "#161616";
     $statusTexto = "DESCONHECIDO";
 
-    $temperatura = $row['temperatura'] ?? '--';
-    $umidade = $row['umidade'] ?? '--';
-    $gas = $row['gas_co'] ?? '--';
+    $temperatura = isset($row['temperatura'])
+    ? number_format($row['temperatura'], 2, '.', '')
+    : '--';
+
+    $umidade = isset($row['umidade'])
+    ? number_format($row['umidade'], 2, '.', '')
+    : '--';
+
+    $gas = isset($row['gas_co'])
+    ? number_format($row['gas_co'], 2, '.', '')
+    : '--';
 
     $ultimaAtualizacao = strtotime($row['data_hora']);
     $agora = time();
