@@ -47,6 +47,8 @@ function processarAlertas($conn){
         $status = 1;
 
         $idSensor = $row['id'];
+        
+        //$nomeSensor = $row['nome'];
 
         /* TEMPERATURA */
 
@@ -93,22 +95,26 @@ function processarAlertas($conn){
 
         case 1:
             $evento =
-            "Sensor $idSensor voltou ao NORMAL";
+            //"Sensor $idSensor voltou ao NORMAL";
+            "Sensor voltou ao NORMAL";
             break;
 
         case 2:
             $evento =
-            "Sensor $idSensor entrou em ATENÇÃO";
+            //"Sensor $idSensor entrou em ATENÇÃO";
+            "Sensor entrou em ATENÇÃO";
             break;
 
         case 3:
             $evento =
-            "Sensor $idSensor entrou em ALARME";
+            //"Sensor $idSensor entrou em ALARME";
+            "Sensor entrou em ALARME";
             break;
 
         default:
             $evento =
-            "Sensor $idSensor status desconhecido";
+            //"Sensor $idSensor status desconhecido";
+            "Sensor status desconhecido";
 
     }
 
