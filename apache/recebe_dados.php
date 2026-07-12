@@ -32,6 +32,7 @@ if ($conn->query($sql) === TRUE) {
     echo "Erro SQL: " . $conn->error;
 }
 
+
 $conn->close();
 
 ?>
