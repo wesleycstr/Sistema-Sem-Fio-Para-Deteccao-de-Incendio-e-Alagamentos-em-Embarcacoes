@@ -11,6 +11,8 @@ function processarAlertas($conn){
         sensores.umidade_min,
         sensores.umidade_max,
         sensores.gas_max,
+        sensores.executar_script,
+        sensores.script_alarme,
 
         dados.temperatura,
         dados.umidade,
@@ -119,6 +121,20 @@ function processarAlertas($conn){
     }
 
             registrarLog($conn, $idSensor, $evento);
+
+            if(
+                $status == 3 &&
+                $row['executar_script'] == 1 &&
+                !empty($row['script_alarme'])
+            ){
+
+            $script = escapeshellarg($row['script_alarme']);
+
+            $comando = "php $script";
+
+            exec($comando . " > /dev/null 2>&1 &");
+
+}
 
         }
 
