@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
 <title>SISCAV</title>
 
 <style>
@@ -270,6 +272,26 @@ tr{
 
 }
 
+.dragHandle{
+
+    cursor:grab;
+
+    user-select:none;
+
+}
+
+.dragHandle:active{
+
+    cursor:grabbing;
+
+}
+
+.linhaGhost{
+
+    opacity:.4;
+
+}
+
 </style>
 
 </head>
@@ -321,7 +343,7 @@ onclick="abrirAba('painel')">
 <thead>
 
 <tr>
-
+<th></th>
 <th>ID</th>
 <th>Localização</th>
 <th>Temperatura</th>
@@ -430,6 +452,23 @@ Ativar alarme sonoro
 
 <br><br>
 
+<label>
+<input type="checkbox" id="executarScript">
+Executar script em caso de alarme
+</label>
+
+<br><br>
+
+<label>Caminho do Script</label>
+
+<input
+type="text"
+id="scriptAlarme"
+class="campo"
+placeholder="/home/usuario/scripts/alarme.sh">
+
+<br><br>
+
 <button onclick="salvarConfig()">
 Salvar
 </button>
@@ -470,6 +509,12 @@ function abrirModal(id){
         document.getElementById("alarmeSonoro").checked =
         data.alarme_sonoro == 1;
 
+        document.getElementById("executarScript").checked =
+        data.executar_script == 1;
+
+        document.getElementById("scriptAlarme").value =
+        data.script_alarme ?? "";
+
     });
 
 }
@@ -499,6 +544,14 @@ function salvarConfig(){
     const alarmeSonoro =
     document.getElementById("alarmeSonoro").checked ? 1 : 0;
 
+    const executarScript =
+    document.getElementById("executarScript").checked ? 1 : 0;
+
+    const scriptAlarme =
+    encodeURIComponent(
+    document.getElementById("scriptAlarme").value
+    );
+
     fetch("salvar_config.php",{
 
         method:"POST",
@@ -513,7 +566,9 @@ function salvarConfig(){
         &umiMin=${umiMin}
         &umiMax=${umiMax}
         &gasMax=${gasMax}
-        &alarmeSonoro=${alarmeSonoro}`
+        &alarmeSonoro=${alarmeSonoro}
+        &executarScript=${executarScript}
+        &scriptAlarme=${scriptAlarme}`
 
     })
     .then(response => response.text())
@@ -619,46 +674,99 @@ setInterval(verificarAlarmes, 1000);
 
 <script>
 
+let arrastando = false;
+let sortable = null;
+let sortableCriado = false;
 
-/* STREAM SENSORES */
-
+// Cria a conexão SSE
 const source = new EventSource("stream.php");
 
-/*source.onmessage = function(event){
-
-    const dados = JSON.parse(event.data);
-
-    document.getElementById("tabela").innerHTML =
-    dados.tabela;
-
-    document.getElementById("painelSensores").innerHTML =
-    dados.cards;
-
-};*/
-
+// Recebe as atualizações
 source.onmessage = function(event){
 
-    console.log(event.data);
+    if(arrastando){
+        return;
+    }
 
     const dados = JSON.parse(event.data);
 
-    console.log(dados);
-
-    console.log(dados.cards);
-
     document.getElementById("tabela").innerHTML =
-    dados.tabela;
+        dados.tabela;
 
     document.getElementById("painelSensores").innerHTML =
-    dados.cards;
+        dados.cards;
+
+    if(!sortableCriado){
+        iniciarSortable();
+        sortableCriado = true;
+    }
+};
+
+source.onerror = function(error){
+    console.log("Erro SSE:", error);
+};
+
+function iniciarSortable(){
+
+    sortable = new Sortable(document.getElementById("tabela"),{
+
+        animation:150,
+
+        handle:".dragHandle",
+
+        onStart:function(){
+
+            arrastando = true;
+
+        },
+
+        onEnd:function(){
+
+            arrastando = false;
+
+            salvarOrdem();
+
+        }
+
+    });
 
 }
 
-source.onerror = function(error){
+</script>
 
-    console.log("Erro SSE:", error);
+<script>
 
-};
+function salvarOrdem(){
+
+    let ordem = [];
+
+    const linhas = document.querySelectorAll("#tabela tr[data-id]");
+
+    linhas.forEach(function(linha){
+
+        ordem.push(linha.dataset.id);
+
+    });
+
+    fetch("salvar_ordem.php",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(ordem)
+
+    })
+    .then(response => response.text())
+    .then(data => {
+
+        console.log(data);
+
+    });
+
+}
 
 /* LOGS */
 

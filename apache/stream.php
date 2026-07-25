@@ -51,7 +51,7 @@ ON dados.id = (
 
 )
 
-ORDER BY sensores.id
+ORDER BY sensores.ordem
 
 ";
 
@@ -248,7 +248,22 @@ onclick='abrirModal({$row['id']})'>
 
     $html .= "
 
-    <tr class='$classe' style='background-color:$cor'>
+<tr
+    data-id='{$row['id']}'
+    class='$classe'
+    style='background-color:$cor'>
+
+        <td class='dragHandle'
+        style='
+        width:35px;
+        text-align:center;
+        cursor:grab;
+        font-size:20px;
+        '>
+
+        ☰
+
+        </td>
 
         <td>{$row['device_token']}</td>
 
@@ -302,7 +317,7 @@ if($erroGeral){
 
     <tr>
 
-        <td colspan='9'
+        <td colspan='10'
             style='background:#b71c1c;
                    color:white;
                    text-align:center;
