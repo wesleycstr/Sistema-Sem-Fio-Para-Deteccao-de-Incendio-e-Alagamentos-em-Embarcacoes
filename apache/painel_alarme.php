@@ -317,6 +317,12 @@ onclick="abrirAba('sensores')">
 Sensores
 
 </button>
+<button class="tabButton"
+onclick="abrirAba('eventos')">
+
+Eventos
+
+</button>
 
 <button class="tabButton"
 onclick="abrirAba('logs')">
@@ -359,6 +365,48 @@ onclick="abrirAba('painel')">
 </thead>
 
 <tbody id="tabela">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<div id="abaEventos"
+class="aba"
+style="display:none;">
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th></th>
+
+<th>Evento</th>
+
+<th>Localização</th>
+
+<th>Nível</th>
+
+<th>Status</th>
+
+<th>Data/Hora</th>
+
+<th></th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody id="tabelaEventos">
 
 </tbody>
 
@@ -641,6 +689,7 @@ setInterval(verificarAlarmes, 1000);
 
     // Esconde todas as abas
     document.getElementById("abaSensores").style.display = "none";
+    document.getElementById("abaEventos").style.display="none";
     document.getElementById("abaLogs").style.display = "none";
     document.getElementById("abaPainel").style.display = "none";
 
@@ -656,21 +705,88 @@ setInterval(verificarAlarmes, 1000);
             document.querySelectorAll(".tabButton")[0].classList.add("active");
             break;
 
+        case "eventos":
+
+            document.getElementById("abaEventos").style.display="block";
+            document.querySelectorAll(".tabButton")[1]
+
+            .classList.add("active");
+
+        break;
+
         case "logs":
 
             document.getElementById("abaLogs").style.display = "block";
-            document.querySelectorAll(".tabButton")[1].classList.add("active");
+            document.querySelectorAll(".tabButton")[2].classList.add("active");
             break;
 
         case "painel":
 
             document.getElementById("abaPainel").style.display = "block";
-            document.querySelectorAll(".tabButton")[2].classList.add("active");
+            document.querySelectorAll(".tabButton")[3].classList.add("active");
             break;
     }
 
 }
 </script>
+
+<script>
+
+let sortableCards = null;
+
+function iniciarSortableCards(){
+
+    if(sortableCards){
+
+        sortableCards.destroy();
+
+    }
+
+    sortableCards = new Sortable(document.getElementById("painelSensores"),{
+
+        animation:150,
+
+        ghostClass:"cardGhost",
+
+        onEnd(){
+
+            salvarOrdemCards();
+
+        }
+
+    });
+
+}
+
+function salvarOrdemCards(){
+
+    let ordem = [];
+
+    document.querySelectorAll("#painelSensores .cardSensor")
+        .forEach(function(card){
+
+            ordem.push(card.dataset.id);
+
+        });
+
+    fetch("salvar_ordem_cards.php",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(ordem)
+
+    })
+    .then(r=>r.text())
+    .then(console.log);
+
+}
+
+</script>
+
 
 <script>
 
@@ -696,8 +812,12 @@ source.onmessage = function(event){
     document.getElementById("painelSensores").innerHTML =
         dados.cards;
 
+    document.getElementById("tabelaEventos").innerHTML =
+    dados.eventos;
+
     if(!sortableCriado){
         iniciarSortable();
+        iniciarSortableCards();
         sortableCriado = true;
     }
 };
@@ -812,7 +932,7 @@ background:#1e1e1e;
 padding:30px;
 border-radius:10px;
 width:90%;
-max-width:400px;
+max-width:450px;
 max-height:90vh;
 overflow-y:auto;
 box-sizing:border-box;
@@ -820,54 +940,129 @@ box-sizing:border-box;
 
 <h2>Cadastrar Sensor</h2>
 
-<!--<label>Nome do Sensor</label>
-<input type="text"
-id="novoNome"
-class="campo">-->
-
 <label>Identificador</label>
+
 <input
 type="text"
 id="novoToken"
 class="campo">
 
 <label>Localização</label>
-<input type="text"
+
+<input
+type="text"
 id="novaLocalizacao"
 class="campo">
 
 <label>Chave Secreta</label>
-<input type="text"
+
+<input
+type="text"
 id="novaChave"
 class="campo">
 
+<label>Tipo do Sensor</label>
+
+<select
+id="tipoSensor"
+class="campo"
+onchange="alterarTipoSensor()">
+
+<option value="ambiente">
+
+🌡 Ambiente
+
+</option>
+
+<option value="evento">
+
+🚨 Evento
+
+</option>
+
+</select>
+<!-- CONFIGURAÇÕES DE EVENTO -->
+
+<div id="configEvento" style="display:none;">
+
+<label>Nome do Evento</label>
+
+<input
+type="text"
+id="nomeEvento"
+class="campo"
+placeholder="Ex.: Alagamento">
+
+<label>Nível do Evento</label>
+
+<select
+id="nivelEvento"
+class="campo">
+
+    <option value="informacao">
+
+        ℹ Informação
+
+    </option>
+
+    <option value="atencao">
+
+        ⚠ Atenção
+
+    </option>
+
+    <option value="critico" selected>
+
+        🚨 Crítico
+
+    </option>
+
+</select>
+
+</div>
+
+<!-- CONFIGURAÇÕES DE AMBIENTE -->
+
+<div id="configAmbiente">
+
 <label>Temperatura Máx</label>
-<input type="number"
+
+<input
+type="number"
 id="novoTempMax"
 class="campo"
 value="40">
 
 <label>Umidade Min</label>
-<input type="number"
+
+<input
+type="number"
 id="novoUmiMin"
 class="campo"
 value="20">
 
 <label>Umidade Máx</label>
-<input type="number"
+
+<input
+type="number"
 id="novoUmiMax"
 class="campo"
 value="80">
 
 <label>CO Máx</label>
-<input type="number"
+
+<input
+type="number"
 id="novoGasMax"
 class="campo"
 value="100">
 
+</div>
+
 <label>
 
-<input type="checkbox"
+<input
+type="checkbox"
 id="novoAlarmeSonoro">
 
 Ativar alarme sonoro
@@ -876,13 +1071,17 @@ Ativar alarme sonoro
 
 <br><br>
 
-<button onclick="salvarSensor()">
+<button
+class="btnConfig"
+onclick="salvarSensor()">
 
 Salvar Sensor
 
 </button>
 
-<button onclick="fecharCadastroSensor()">
+<button
+class="btnExcluir"
+onclick="fecharCadastroSensor()">
 
 Cancelar
 
@@ -934,6 +1133,15 @@ function salvarSensor(){
     const gasMax =
     document.getElementById("novoGasMax").value;
 
+    const tipoSensor =
+    document.getElementById("tipoSensor").value;
+
+    const nomeEvento =
+    document.getElementById("nomeEvento").value;
+
+    const nivelEvento =
+    document.getElementById("nivelEvento").value;
+
     const alarmeSonoro =
 
     document.getElementById(
@@ -976,7 +1184,16 @@ function salvarSensor(){
         "&gasMax=" + gasMax +
 
         "&alarmeSonoro=" +
-        alarmeSonoro
+        alarmeSonoro +
+
+        "&tipoSensor=" +
+        encodeURIComponent(tipoSensor) +
+
+        "&nomeEvento=" +
+        encodeURIComponent(nomeEvento) +
+
+        "&nivelEvento=" +
+        encodeURIComponent(nivelEvento)
 
     })
 
@@ -1052,5 +1269,37 @@ function excluirSensor(id){
 
 </script>
 
+<script>
+function alterarTipoSensor(){
+
+    const tipo =
+    document.getElementById("tipoSensor").value;
+
+    const ambiente =
+    document.getElementById("configAmbiente");
+
+    const evento =
+    document.getElementById("configEvento");
+
+    switch(tipo){
+
+        case "ambiente":
+
+            ambiente.style.display = "block";
+            evento.style.display = "none";
+
+            break;
+
+        case "evento":
+
+            ambiente.style.display = "none";
+            evento.style.display = "block";
+
+            break;
+    }
+
+}
+
+</script>
 </body>
 </html>

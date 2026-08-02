@@ -2,59 +2,74 @@
 
 include 'conexao.php';
 
-//$nome = $_POST['nome'] ?? '';
+// ======================================================
+// DADOS RECEBIDOS
+// ======================================================
+
+$tipoSensor =
+$_POST['tipoSensor'] ?? 'ambiente';
 
 $localizacao =
-$_POST['localizacao'] ?? '';
+trim($_POST['localizacao'] ?? '');
 
 $token =
-$_POST['token'] ?? '';
+trim($_POST['token'] ?? '');
 
 $chave =
-$_POST['chave'] ?? '';
-
-$tempMax =
-$_POST['tempMax'] ?? 40;
-
-$umiMin =
-$_POST['umiMin'] ?? 20;
-
-$umiMax =
-$_POST['umiMax'] ?? 80;
-
-$gasMax =
-$_POST['gasMax'] ?? 100;
+trim($_POST['chave'] ?? '');
 
 $alarmeSonoro =
-$_POST['alarmeSonoro'] ?? 0;
+intval($_POST['alarmeSonoro'] ?? 0);
 
-/* validações */
+/* CAMPOS SENSOR AMBIENTE */
 
-/*if(empty($nome)){
+$tempMax =
+floatval($_POST['tempMax'] ?? 40);
 
-    die("Nome obrigatório");
+$umiMin =
+floatval($_POST['umiMin'] ?? 20);
 
-}*/
+$umiMax =
+floatval($_POST['umiMax'] ?? 80);
 
-if(empty($localizacao)){
+$gasMax =
+floatval($_POST['gasMax'] ?? 100);
 
-    die("Localização obrigatória");
+/* CAMPOS SENSOR EVENTO */
+
+$nomeEvento =
+trim($_POST['nomeEvento'] ?? '');
+
+$nivelEvento =
+$_POST['nivelEvento'] ?? 'critico';
+
+// ======================================================
+// VALIDAÇÕES
+// ======================================================
+
+if($localizacao==""){
+
+    die("Informe a localização.");
 
 }
 
-if(empty($token)){
+if($token==""){
 
-    die("Token obrigatório");
-
-}
-
-if(empty($chave)){
-
-    die("Chave obrigatória");
+    die("Informe o identificador.");
 
 }
 
-/* insert */
+if($chave==""){
+
+    die("Informe a chave secreta.");
+
+}
+
+// ======================================================
+// SENSOR AMBIENTE
+// ======================================================
+
+if($tipoSensor=="ambiente"){
 
 $stmt = $conn->prepare("
 
@@ -62,14 +77,27 @@ INSERT INTO sensores
 
 (
 
-    localizacao,
-    chave_secreta,
-    device_token,
-    temperatura_max,
-    umidade_min,
-    umidade_max,
-    gas_max,
-    alarme_sonoro
+localizacao,
+
+chave_secreta,
+
+device_token,
+
+temperatura_max,
+
+umidade_min,
+
+umidade_max,
+
+gas_max,
+
+alarme_sonoro,
+
+offline,
+
+ordem,
+
+ordem_cards
 
 )
 
@@ -77,7 +105,7 @@ VALUES
 
 (
 
-    ?, ?, ?, ?, ?, ?, ?, ?
+?,?,?, ?,?,?,?, ?,0,0,0
 
 )
 
@@ -85,40 +113,134 @@ VALUES
 
 $stmt->bind_param(
 
-    "sssddddi",
+"sssddddi",
 
-    $localizacao,
-    $chave,
-    $token,
-    $tempMax,
-    $umiMin,
-    $umiMax,
-    $gasMax,
-    $alarmeSonoro
+$localizacao,
+
+$chave,
+
+$token,
+
+$tempMax,
+
+$umiMin,
+
+$umiMax,
+
+$gasMax,
+
+$alarmeSonoro
 
 );
 
 if($stmt->execute()){
 
-    /* cria status inicial */
+$idSensor = $stmt->insert_id;
 
-    $idSensor =
-    $stmt->insert_id;
+$conn->query("
 
-    $conn->query("
+INSERT INTO alarme
 
-    INSERT INTO alarme
-    (id_sensor, status)
+(id_sensor,status)
 
-    VALUES
-    ('$idSensor', 1)
+VALUES
 
-    ");
+($idSensor,1)
 
-    echo "Sensor cadastrado com sucesso";
+");
+
+echo "Sensor de ambiente cadastrado com sucesso.";
 
 }else{
 
-    echo "Erro ao cadastrar";
+echo "Erro ao cadastrar.<br>";
+
+echo $stmt->error;
 
 }
+
+exit;
+
+}
+
+// ======================================================
+// SENSOR DE EVENTO
+// ======================================================
+
+if($tipoSensor=="evento"){
+
+if($nomeEvento==""){
+
+die("Informe o nome do evento.");
+
+}
+
+$stmt = $conn->prepare("
+
+INSERT INTO sensores_evento
+
+(
+
+device_token,
+
+chave_secreta,
+
+localizacao,
+
+nome_evento,
+
+nivel_evento,
+
+alarme_sonoro,
+
+offline,
+
+ordem_eventos
+
+)
+
+VALUES
+
+(
+
+?,?,?, ?,?,?,0,0
+
+)
+
+");
+
+$stmt->bind_param(
+
+"sssssi",
+
+$token,
+
+$chave,
+
+$localizacao,
+
+$nomeEvento,
+
+$nivelEvento,
+
+$alarmeSonoro
+
+);
+
+if($stmt->execute()){
+
+echo "Sensor de evento cadastrado com sucesso.";
+
+}else{
+
+echo "Erro ao cadastrar.<br>";
+
+echo $stmt->error;
+
+}
+
+exit;
+
+}
+
+echo "Tipo de sensor inválido.";

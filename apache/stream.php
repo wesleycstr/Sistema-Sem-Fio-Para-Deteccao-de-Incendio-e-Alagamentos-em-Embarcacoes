@@ -79,14 +79,16 @@ while($row = $result->fetch_assoc()){
     ? number_format($row['gas_co'], 2, '.', '')
     : '--';
 
-    $ultimaAtualizacao = strtotime($row['data_hora']);
-    $agora = time();
+    if(empty($row['data_hora'])){
 
-    /* diferença em segundos */
-    $diferenca = $agora - $ultimaAtualizacao;
+    $offline = true;
 
-    /* sensor offline se passar de 10 segundos */
-    $offline = $diferenca > 10;
+    }else{
+
+        $ultimaAtualizacao = strtotime($row['data_hora']);
+
+        $offline = (time() - $ultimaAtualizacao) > 10;
+    }
 
     /* estado atual salvo no banco */
 
@@ -309,11 +311,166 @@ onclick='abrirModal({$row['id']})'>
     ";
 }
 
+/* consulta relacionada a tabela eventos*/
+$htmlEventos = "";
+
+$sql="SELECT
+
+id,
+device_token,
+localizacao,
+nome_evento,
+nivel_evento,
+estado,
+data_hora,
+offline
+
+FROM sensores_evento
+
+ORDER BY ordem_eventos";
+
+$resultEventos = $conn->query($sql);
+
+while($row = $resultEventos->fetch_assoc()){
+
+    $ultimaAtualizacao = strtotime($row['data_hora']);
+
+    $agora = time();
+
+    $diferenca = $agora - $ultimaAtualizacao;
+
+    $offline = $diferenca > 15;
+
+
+    if($offline){
+
+    $erroGeral = true;
+
+    $conn->query("
+
+        UPDATE sensores_evento
+
+        SET offline = 1
+
+        WHERE id='{$row['id']}'
+
+    ");
+
+    }else{
+
+        $conn->query("
+
+            UPDATE sensores_evento
+
+            SET offline = 0
+
+            WHERE id='{$row['id']}'
+
+        ");
+
+    }
+
+    $status = $offline
+        ? "OFFLINE"
+        : "ONLINE";
+
+/* =====================================
+   DEFINE A COR DA LINHA
+===================================== */
+
+$cor = "#2e7d32";   // Verde (normal)
+
+if($offline){
+
+    // Dispositivo sem comunicação
+    $cor = "#616161";
+
+}else{
+
+    // Evento ATIVO
+    if($row['estado'] == 1){
+
+        switch($row['nivel_evento']){
+
+            case "informacao":
+
+                $cor = "#1565c0";   // Azul
+                break;
+
+            case "atencao":
+
+                $cor = "#f9a825";   // Amarelo
+                break;
+
+            case "critico":
+
+                $cor = "#c62828";   // Vermelho
+                break;
+
+            default:
+
+                $cor = "#2e7d32";
+        }
+
+    }
+
+}
+    $htmlEventos .= "
+
+<tr data-id='{$row['id']}'
+style='background:$cor;'>
+
+<td class='dragHandle'>
+
+☰
+
+</td>
+
+<td>{$icone} {$row['nome_evento']}</td>
+
+<td>{$row['localizacao']}</td>
+
+<td>{$row['nivel_evento']}</td>
+
+<td>{$status}</td>
+
+<td>{$row['data_hora']}</td>
+
+<td>
+
+<button
+class='btnConfig'
+onclick='abrirModalEvento({$row['id']})'>
+
+⚙️
+
+</button>
+
+</td>
+
+<td>
+
+<button
+class='btnExcluir'
+onclick='excluirEvento({$row['id']})'>
+
+🗑️
+
+</button>
+
+</td>
+
+</tr>
+
+";
+
+}
+
 /* mensagem de erro */
 
 if($erroGeral){
 
-    $html = "
+    $aviso = "
 
     <tr>
 
@@ -324,20 +481,33 @@ if($erroGeral){
                    font-weight:bold;
                    font-size:18px;'>
 
-            ⚠ ERRO: EXISTEM SENSORES SEM ATUALIZAÇÃO
+            ⚠ EXISTEM DISPOSITIVOS SEM COMUNICAÇÃO
 
         </td>
 
     </tr>
 
-    " . $html;
+    ";
+
+    $html = $aviso.$html;
+
+    $htmlEventos = $aviso.$htmlEventos;
+
 }
 
 $dados = [
 
-    "tabela" => str_replace("\n","",$html),
+    "tabela" =>
 
-    "cards" => str_replace("\n","",$cards)
+        str_replace("\n","",$html),
+
+    "eventos" =>
+
+        str_replace("\n","",$htmlEventos),
+
+    "cards" =>
+
+        str_replace("\n","",$cards)
 
 ];
 
