@@ -15,6 +15,7 @@ $deviceToken = $_SERVER['HTTP_X_DEVICE_TOKEN'] ?? '';
 $timestamp   = $_SERVER['HTTP_X_TIMESTAMP'] ?? '';
 $signature   = $_SERVER['HTTP_X_SIGNATURE'] ?? '';
 
+
 if(
     empty($deviceToken) ||
     empty($timestamp) ||
@@ -139,33 +140,31 @@ if(!isset($dados["eventos"])){
 
 foreach($dados["eventos"] as $evento){
 
-    $idEvento = intval($evento["id"]);
+    $canal = intval($evento["canal"]);
 
     $estado = intval($evento["estado"]);
 
     $stmt = $conn->prepare("
 
-    UPDATE sensores_evento
+        UPDATE sensores_evento
 
-    SET
+        SET
+            estado = ?,
+            data_hora = NOW()
 
-        estado=?,
-
-        data_hora=NOW()
-
-    WHERE
-
-        id=?
+        WHERE
+            device_token = ?
+            AND canal = ?
 
     ");
 
     $stmt->bind_param(
 
-        "ii",
+        "isi",
 
         $estado,
-
-        $idEvento
+        $deviceToken,
+        $canal
 
     );
 

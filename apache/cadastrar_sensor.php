@@ -43,6 +43,8 @@ trim($_POST['nomeEvento'] ?? '');
 $nivelEvento =
 $_POST['nivelEvento'] ?? 'critico';
 
+$canal = intval($_POST['canal'] ?? 0);
+
 // ======================================================
 // VALIDAÇÕES
 // ======================================================
@@ -183,6 +185,8 @@ INSERT INTO sensores_evento
 
 device_token,
 
+canal,
+
 chave_secreta,
 
 localizacao,
@@ -203,7 +207,7 @@ VALUES
 
 (
 
-?,?,?, ?,?,?,0,0
+?,?,?,?,?,?,?,0,0
 
 )
 
@@ -211,9 +215,11 @@ VALUES
 
 $stmt->bind_param(
 
-"sssssi",
+"sissssi",
 
 $token,
+
+$canal,
 
 $chave,
 

@@ -985,42 +985,52 @@ onchange="alterarTipoSensor()">
 
 <div id="configEvento" style="display:none;">
 
-<label>Nome do Evento</label>
+    <label>Canal da Placa</label>
 
-<input
-type="text"
-id="nomeEvento"
-class="campo"
-placeholder="Ex.: Alagamento">
+    <select
+        id="novoCanal"
+        class="campo">
 
-<label>Nível do Evento</label>
+        <option value="1">Canal 1 (D1)</option>
+        <option value="2">Canal 2 (D2)</option>
+        <option value="3">Canal 3 (D3)</option>
+        <option value="4">Canal 4 (D4)</option>
+        <option value="5">Canal 5 (D5)</option>
+        <option value="6">Canal 6 (D6)</option>
+        <option value="7">Canal 7 (D7)</option>
+        <option value="8">Canal 8 (D8)</option>
 
-<select
-id="nivelEvento"
-class="campo">
+    </select>
 
-    <option value="informacao">
+    <label>Nome do Evento</label>
 
-        ℹ Informação
+    <input
+        type="text"
+        id="nomeEvento"
+        class="campo"
+        placeholder="Ex.: Alagamento">
 
-    </option>
+    <label>Nível do Evento</label>
 
-    <option value="atencao">
+    <select
+        id="nivelEvento"
+        class="campo">
 
-        ⚠ Atenção
+        <option value="informacao">
+            ℹ Informação
+        </option>
 
-    </option>
+        <option value="atencao">
+            ⚠ Atenção
+        </option>
 
-    <option value="critico" selected>
+        <option value="critico" selected>
+            🚨 Crítico
+        </option>
 
-        🚨 Crítico
-
-    </option>
-
-</select>
+    </select>
 
 </div>
-
 <!-- CONFIGURAÇÕES DE AMBIENTE -->
 
 <div id="configAmbiente">
@@ -1142,6 +1152,9 @@ function salvarSensor(){
     const nivelEvento =
     document.getElementById("nivelEvento").value;
 
+    const canal =
+    document.getElementById("novoCanal").value;
+
     const alarmeSonoro =
 
     document.getElementById(
@@ -1193,7 +1206,10 @@ function salvarSensor(){
         encodeURIComponent(nomeEvento) +
 
         "&nivelEvento=" +
-        encodeURIComponent(nivelEvento)
+        encodeURIComponent(nivelEvento) +
+
+        "&canal=" +
+        encodeURIComponent(canal)
 
     })
 

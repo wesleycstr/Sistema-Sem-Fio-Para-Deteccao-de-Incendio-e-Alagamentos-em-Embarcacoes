@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('America/Sao_Paulo');
 
-$host = "172.22.0.4";
+$host = "172.22.0.3";
 $user = "root";
 $password = "senha";
 $database = "siscav";
