@@ -793,11 +793,16 @@ function salvarOrdemCards(){
 let arrastando = false;
 let sortable = null;
 let sortableCriado = false;
+let alarmeEventoAnterior = false;
 
+const audioAlarmeEvento = new Audio(
+    "alarme.mp3"
+);
+
+audioAlarmeEvento.loop = true;
 // Cria a conexão SSE
 const source = new EventSource("stream.php");
 
-// Recebe as atualizações
 source.onmessage = function(event){
 
     if(arrastando){
@@ -806,20 +811,112 @@ source.onmessage = function(event){
 
     const dados = JSON.parse(event.data);
 
+    console.log("Dados recebidos pelo SSE:", dados);
+    console.log("alarmeEvento:", dados.alarmeEvento);
+
+    // ==========================================
+    // ATUALIZA TABELA DE SENSORES
+    // ==========================================
+
     document.getElementById("tabela").innerHTML =
         dados.tabela;
+
+
+    // ==========================================
+    // ATUALIZA CARDS
+    // ==========================================
 
     document.getElementById("painelSensores").innerHTML =
         dados.cards;
 
+
+    // ==========================================
+    // ATUALIZA TABELA DE EVENTOS
+    // ==========================================
+
     document.getElementById("tabelaEventos").innerHTML =
-    dados.eventos;
+        dados.eventos;
+
+
+    // ==========================================
+    // ALARME SONORO DOS EVENTOS
+    // ==========================================
+
+    const alarmeEventoAtual =
+        dados.alarmeEvento === true;
+
+
+    // ==========================================
+    // EVENTO ACABOU DE SER ATIVADO
+    // false → true
+    // ==========================================
+
+    if(
+        alarmeEventoAtual &&
+        !alarmeEventoAnterior
+    ){
+
+        console.log(
+            "🔊 Alarme de evento ativado"
+        );
+
+        audioAlarmeEvento
+            .play()
+            .catch(function(error){
+
+                console.log(
+                    "Navegador bloqueou o áudio:",
+                    error
+                );
+
+            });
+
+    }
+
+
+    // ==========================================
+    // TODOS OS EVENTOS FORAM NORMALIZADOS
+    // true → false
+    // ==========================================
+
+    if(
+        !alarmeEventoAtual &&
+        alarmeEventoAnterior
+    ){
+
+        console.log(
+            "🔇 Alarme de evento desativado"
+        );
+
+        audioAlarmeEvento.pause();
+
+        audioAlarmeEvento.currentTime = 0;
+
+    }
+
+
+    // ==========================================
+    // GUARDA O ESTADO ATUAL
+    // ==========================================
+
+    alarmeEventoAnterior =
+        alarmeEventoAtual;
+
+
+    // ==========================================
+    // SORTABLE
+    // ==========================================
 
     if(!sortableCriado){
+
         iniciarSortable();
+
         iniciarSortableCards();
+
         sortableCriado = true;
+
     }
+
 };
 
 source.onerror = function(error){
@@ -1016,15 +1113,15 @@ onchange="alterarTipoSensor()">
         id="nivelEvento"
         class="campo">
 
-        <option value="informacao">
+        <option value="Informacao">
             ℹ Informação
         </option>
 
-        <option value="atencao">
+        <option value="Atencao">
             ⚠ Atenção
         </option>
 
-        <option value="critico" selected>
+        <option value="Critico" selected>
             🚨 Crítico
         </option>
 
@@ -1095,6 +1192,105 @@ onclick="fecharCadastroSensor()">
 
 Cancelar
 
+</button>
+
+</div>
+
+</div>
+
+<!-- MODAL EDITAR EVENTO -->
+
+<div id="modalEditarEvento"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+z-index:1000;
+">
+
+<div style="
+background:#1e1e1e;
+padding:30px;
+border-radius:10px;
+width:90%;
+max-width:400px;
+box-sizing:border-box;
+">
+
+<h2>Editar Evento</h2>
+
+<input
+type="hidden"
+id="eventoEditandoId">
+
+<label>Canal da Placa</label>
+
+<select
+id="editarCanal"
+class="campo">
+
+<option value="1">Canal 1 (D1)</option>
+<option value="2">Canal 2 (D2)</option>
+<option value="3">Canal 3 (D3)</option>
+<option value="4">Canal 4 (D4)</option>
+<option value="5">Canal 5 (D5)</option>
+<option value="6">Canal 6 (D6)</option>
+<option value="7">Canal 7 (D7)</option>
+<option value="8">Canal 8 (D8)</option>
+
+</select>
+
+<label>Nome do Evento</label>
+
+<input
+type="text"
+id="editarNomeEvento"
+class="campo">
+
+<label>Nível do Evento</label>
+
+<select
+id="editarNivelEvento"
+class="campo">
+
+<option value="Informacao">
+ℹ Informação
+</option>
+
+<option value="Atencao">
+⚠ Atenção
+</option>
+
+<option value="Critico">
+🚨 Crítico
+</option>
+
+</select>
+
+<label>
+
+<input
+type="checkbox"
+id="editarAlarmeSonoro">
+
+Ativar alarme sonoro
+
+</label>
+
+<br><br>
+
+<button onclick="salvarEdicaoEvento()">
+Salvar
+</button>
+
+<button onclick="fecharModalEditarEvento()">
+Cancelar
 </button>
 
 </div>
@@ -1313,6 +1509,201 @@ function alterarTipoSensor(){
 
             break;
     }
+
+}
+</script>
+
+<script>
+function abrirModalEvento(id){
+
+    fetch(
+        window.location.origin +
+        "/buscar_evento.php?id=" + id
+    )
+
+    .then(response => response.json())
+
+    .then(evento => {
+
+        if(evento.erro){
+
+            alert(evento.erro);
+            return;
+
+        }
+
+        document.getElementById("eventoEditandoId").value =
+            evento.id;
+
+        document.getElementById("editarCanal").value =
+            evento.canal;
+
+        document.getElementById("editarNomeEvento").value =
+            evento.nome_evento;
+
+        document.getElementById("editarNivelEvento").value =
+            evento.nivel_evento;
+
+        document.getElementById("editarAlarmeSonoro").checked =
+            evento.alarme_sonoro == 1;
+
+        document.getElementById("modalEditarEvento").style.display =
+            "flex";
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Erro ao carregar evento.");
+
+    });
+
+}
+</script>
+
+<script>
+function salvarEdicaoEvento(){
+
+    const id =
+        document.getElementById(
+            "eventoEditandoId"
+        ).value;
+
+    const canal =
+        document.getElementById(
+            "editarCanal"
+        ).value;
+
+    const nomeEvento =
+        document.getElementById(
+            "editarNomeEvento"
+        ).value;
+
+    const nivelEvento =
+        document.getElementById(
+            "editarNivelEvento"
+        ).value;
+
+    const alarmeSonoro =
+        document.getElementById(
+            "editarAlarmeSonoro"
+        ).checked ? 1 : 0;
+
+    if(nomeEvento.trim() === ""){
+
+        alert("Informe o nome do evento.");
+
+        return;
+
+    }
+
+    fetch(
+        window.location.origin +
+        "/editar_evento.php",
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "application/x-www-form-urlencoded"
+            },
+
+            body:
+
+                "id=" +
+                encodeURIComponent(id) +
+
+                "&canal=" +
+                encodeURIComponent(canal) +
+
+                "&nomeEvento=" +
+                encodeURIComponent(nomeEvento) +
+
+                "&nivelEvento=" +
+                encodeURIComponent(nivelEvento) +
+
+                "&alarmeSonoro=" +
+                alarmeSonoro
+
+        }
+    )
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+        fecharModalEditarEvento();
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Erro ao editar evento.");
+
+    });
+
+}
+
+function fecharModalEditarEvento(){
+
+    document.getElementById(
+        "modalEditarEvento"
+    ).style.display = "none";
+
+}
+
+function excluirEvento(id){
+
+    if(!confirm(
+        "Tem certeza que deseja excluir este evento?"
+    )){
+
+        return;
+
+    }
+
+    fetch(
+        window.location.origin +
+        "/excluir_evento.php",
+
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "application/x-www-form-urlencoded"
+            },
+
+            body:
+                "id=" +
+                encodeURIComponent(id)
+
+        }
+    )
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Erro ao excluir evento.");
+
+    });
 
 }
 
