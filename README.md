@@ -113,7 +113,7 @@ A obtenção dos dados de temperatura, gases e existência de água decorrente d
 Os dados que são coletados seguem para o servidor através do protocolo HTTP, fazendo uso de uma rede sem fio. Cada unidade conta com um identificador exclusivo, o qual é inserido em cada pacote que se envia, possibilitando ao servidor que reconheça a procedência dos dados e realize o seu armazenamento de maneira adequada junto ao banco de dados.
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/abc9e1b0-7be7-42e6-8337-92152eddee1f" width="900px" />
+  <img src="https://github.com/user-attachments/assets/ced9bca0-1f8c-4ac6-908f-d0087163c04e" width="900px" />
 </div>
 
 ### Processamento dos dados
