@@ -110,18 +110,15 @@ Além dos componentes apresentados, é necessário um servidor, que poderá ser 
 ### Coleta e envio de dados
 A obtenção dos dados de temperatura, gases e existência de água decorrente de alagamentos se dá por meio de unidades compostas por sensores conectados a microcontroladores. O sistema foi configurado de modo a executar leituras e transmissões em intervalos de 5 segundos, visando sustentar uma frequência elevada de amostragem, o que por sua vez coopera para que haja uma resposta mais ágil no enfrentamento de situações críticas.
 
-Os dados que são coletados seguem para o servidor através do protocolo HTTP, fazendo uso de uma rede sem fio. EM DESENVOLVIMENTO--> A fim de mitigar eventuais ocorrências de interferências dentro do sistema, foi implementado um pequeno atraso aleatório antes do envio das informações, reduzindo assim a probabilidade de colisões entre os dispositivos que dividem o mesmo canal de comunicação. Além disso, cada unidade conta com um identificador exclusivo, o qual é inserido em cada pacote que se envia, possibilitando ao servidor que reconheça a procedência dos dados e realize o seu armazenamento de maneira adequada junto ao banco de dados. <--
+Os dados que são coletados seguem para o servidor através do protocolo HTTP, fazendo uso de uma rede sem fio. Cada unidade conta com um identificador exclusivo, o qual é inserido em cada pacote que se envia, possibilitando ao servidor que reconheça a procedência dos dados e realize o seu armazenamento de maneira adequada junto ao banco de dados.
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/abc9e1b0-7be7-42e6-8337-92152eddee1f" width="900px" />
 </div>
 
 ### Processamento dos dados
-Os dados obtidos pelos sensores são encaminhados ao servidor e armazenados em um banco de dados. Nesse ambiente, os dados são recepcionados por um script que verifica a origem, filtra as informações e inseri-as no banco de dados.
+Os dados obtidos pelos sensores são encaminhados ao servidor e armazenados em um banco de dados. Nesse ambiente, os dados são recepcionados por um script que verifica a origem, filtra as informações e inseri-as no banco de dados. Uma vez armazenados, esses dados passam a ser acessados pelas plataformas web, utilizadas para fins de visualização e análise dos dados.
 
-Uma vez armazenados, esses dados passam a ser acessados pela plataforma Grafana, utilizada para fins de visualização e análise dos dados. Por meio dessa ferramenta, são elaborados painéis que permitem ao usuário acompanhar o comportamento das variáveis monitoradas.
-
-Além da função de visualização, o Grafana também é empregado na definição de regras de alerta. Por meio dessa ferramenta o usuário pode estabelecer limites para cada variável monitorada e sempre que esses valores são excedidos é disparado um script que aciona um alarme externo.
 <div align="center">
   <img src="https://github.com/user-attachments/assets/d1398123-f2c0-4c44-86d5-3f7869bec08a" width="300px" />
   <p><em>Diagrama Entidade-Relacionamento do banco de dados</em></p>
