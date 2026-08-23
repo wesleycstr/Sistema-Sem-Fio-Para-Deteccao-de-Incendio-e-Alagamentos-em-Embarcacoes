@@ -1,184 +1,384 @@
 <?php
 
-function processarAlertas($conn){
+/*
+=========================================================
+PROCESSAMENTO DOS ALERTAS
+=========================================================
+*/
 
-    // =====================================================
-    // PROCESSAMENTO DOS SENSORES AMBIENTAIS
-    // =====================================================
+
+function processarAlertas($conn)
+{
+
+    /*
+    =====================================================
+    PROCESSAMENTO DOS SENSORES AMBIENTAIS
+    =====================================================
+    */
 
     $sql = "
 
-    SELECT
+        SELECT
 
-        sensores.id,
+            sensores.id,
 
-        sensores.temperatura_max,
-        sensores.umidade_min,
-        sensores.umidade_max,
-        sensores.gas_max,
-        sensores.executar_script,
-        sensores.script_alarme,
+            sensores.temperatura_max,
+            sensores.umidade_min,
+            sensores.umidade_max,
+            sensores.gas_max,
 
-        dados.temperatura,
-        dados.umidade,
-        dados.gas_co,
+            sensores.executar_script,
+            sensores.script_alarme,
 
-        alarme.status AS status_atual
+            dados.temperatura,
+            dados.umidade,
+            dados.gas_co,
 
-    FROM sensores
+            alarme.status AS status_atual
 
-    LEFT JOIN dados
-    ON dados.id = (
+        FROM sensores
 
-        SELECT id
-        FROM dados d2
-        WHERE d2.id_sensor = sensores.id
-        ORDER BY data_hora DESC
-        LIMIT 1
+        LEFT JOIN dados
 
-    )
+        ON dados.id = (
 
-    LEFT JOIN alarme
-    ON alarme.id_sensor = sensores.id
+            SELECT id
+
+            FROM dados d2
+
+            WHERE d2.id_sensor = sensores.id
+
+            ORDER BY data_hora DESC
+
+            LIMIT 1
+
+        )
+
+        LEFT JOIN alarme
+
+        ON alarme.id_sensor = sensores.id
 
     ";
 
+
     $result = $conn->query($sql);
 
-    if($result){
 
-        while($row = $result->fetch_assoc()){
+    if(!$result){
 
-            $status = 1;
+        error_log(
+            "Erro ao consultar sensores ambientais: " .
+            $conn->error
+        );
 
-            $idSensor = $row['id'];
+        return;
 
-            // =================================================
-            // TEMPERATURA
-            // =================================================
+    }
 
-            if(
-                isset($row['temperatura']) &&
-                $row['temperatura'] > $row['temperatura_max']
-            ){
 
-                $status = 3;
+    /*
+    =====================================================
+    PROCESSA CADA SENSOR AMBIENTAL
+    =====================================================
+    */
 
-            }
+    while($row = $result->fetch_assoc()){
 
-            // =================================================
-            // UMIDADE
-            // =================================================
 
-            if(
-                isset($row['umidade']) &&
-                (
-                    $row['umidade'] < $row['umidade_min']
-                    ||
-                    $row['umidade'] > $row['umidade_max']
-                )
-            ){
+        /*
+        ================================================
+        STATUS NORMAL
+        ================================================
+        */
+
+        $status = 1;
+
+        $ocorrencias = [];
+
+
+        $idSensor =
+            intval($row['id']);
+
+
+        /*
+        ================================================
+        TEMPERATURA
+        ================================================
+        */
+
+        if(
+            isset($row['temperatura']) &&
+            $row['temperatura'] !== null &&
+            $row['temperatura_max'] !== null &&
+            $row['temperatura'] > $row['temperatura_max']
+        ){
+
+            $status = 3;
+
+
+            $ocorrencias[] =
+                "Temperatura acima do limite máximo (" .
+                $row['temperatura'] .
+                "°C > " .
+                $row['temperatura_max'] .
+                "°C)";
+
+        }
+
+
+        /*
+        ================================================
+        UMIDADE ABAIXO DO LIMITE
+        ================================================
+        */
+
+        if(
+            isset($row['umidade']) &&
+            $row['umidade'] !== null &&
+            $row['umidade_min'] !== null &&
+            $row['umidade'] < $row['umidade_min']
+        ){
+
+            /*
+            Se não houver uma condição crítica,
+            o status será ATENÇÃO.
+            */
+
+            if($status < 3){
 
                 $status = 2;
 
             }
 
-            // =================================================
-            // GÁS
-            // =================================================
+
+            $ocorrencias[] =
+                "Umidade abaixo do limite mínimo (" .
+                $row['umidade'] .
+                "% < " .
+                $row['umidade_min'] .
+                "%)";
+
+        }
+
+
+        /*
+        ================================================
+        UMIDADE ACIMA DO LIMITE
+        ================================================
+        */
+
+        if(
+            isset($row['umidade']) &&
+            $row['umidade'] !== null &&
+            $row['umidade_max'] !== null &&
+            $row['umidade'] > $row['umidade_max']
+        ){
+
+            if($status < 3){
+
+                $status = 2;
+
+            }
+
+
+            $ocorrencias[] =
+                "Umidade acima do limite máximo (" .
+                $row['umidade'] .
+                "% > " .
+                $row['umidade_max'] .
+                "%)";
+
+        }
+
+
+        /*
+        ================================================
+        GÁS / CO
+        ================================================
+        */
+
+        if(
+            isset($row['gas_co']) &&
+            $row['gas_co'] !== null &&
+            $row['gas_max'] !== null &&
+            $row['gas_co'] > $row['gas_max']
+        ){
+
+            /*
+            Gás acima do limite é condição crítica.
+            */
+
+            $status = 3;
+
+
+            $ocorrencias[] =
+                "Concentração de CO acima do limite máximo (" .
+                $row['gas_co'] .
+                " ppm > " .
+                $row['gas_max'] .
+                " ppm)";
+
+        }
+
+
+        /*
+        ================================================
+        MONTA A OCORRÊNCIA
+        ================================================
+        */
+
+        $ocorrencia = implode(
+            " | ",
+            $ocorrencias
+        );
+
+
+        /*
+        ================================================
+        STATUS ANTERIOR
+        ================================================
+        */
+
+        $statusAnterior =
+            isset($row['status_atual'])
+            ? intval($row['status_atual'])
+            : -1;
+
+
+        /*
+        ================================================
+        VERIFICA SE O STATUS MUDOU
+        ================================================
+        */
+
+        if($status != $statusAnterior){
+
+
+            /*
+            ============================================
+            DESCRIÇÃO DO EVENTO
+            ============================================
+            */
+
+            switch($status){
+
+                case 1:
+
+                    $evento =
+                        "Sensor voltou ao NORMAL";
+
+
+                    if(empty($ocorrencia)){
+
+                        $ocorrencia =
+                            "Temperatura, umidade e concentração de CO dentro dos limites";
+
+                    }
+
+                    break;
+
+
+                case 2:
+
+                    $evento =
+                        "Sensor entrou em ATENÇÃO";
+
+                    break;
+
+
+                case 3:
+
+                    $evento =
+                        "Sensor entrou em ALARME";
+
+                    break;
+
+
+                default:
+
+                    $evento =
+                        "Sensor status desconhecido";
+
+                    break;
+
+            }
+
+
+            /*
+            ============================================
+            REGISTRA LOG
+            ============================================
+            */
+
+            registrarLog(
+
+                $conn,
+
+                $idSensor,
+
+                $evento,
+
+                $ocorrencia,
+
+                'ambiental'
+
+            );
+
+
+            /*
+            ============================================
+            EXECUTA SCRIPT DO ALARME AMBIENTAL
+            ============================================
+            */
 
             if(
-                isset($row['gas_co']) &&
-                $row['gas_co'] > $row['gas_max']
+                $status == 3 &&
+                intval($row['executar_script']) == 1 &&
+                !empty($row['script_alarme'])
             ){
 
-                $status = 3;
-
-            }
-
-            // =================================================
-            // STATUS ANTERIOR
-            // =================================================
-
-            $statusAnterior =
-                isset($row['status_atual'])
-                ? $row['status_atual']
-                : -1;
-
-            // =================================================
-            // MUDANÇA DE STATUS
-            // =================================================
-
-            if($status != $statusAnterior){
-
-                switch($status){
-
-                    case 1:
-
-                        $evento =
-                            "Sensor voltou ao NORMAL";
-
-                        break;
-
-                    case 2:
-
-                        $evento =
-                            "Sensor entrou em ATENÇÃO";
-
-                        break;
-
-                    case 3:
-
-                        $evento =
-                            "Sensor entrou em ALARME";
-
-                        break;
-
-                    default:
-
-                        $evento =
-                            "Sensor status desconhecido";
-
-                }
-
-                registrarLog(
-                    $conn,
-                    $idSensor,
-                    $evento
-                );
-
-                // =============================================
-                // EXECUTA SCRIPT DO ALARME AMBIENTAL
-                // =============================================
-
-                if(
-                    $status == 3 &&
-                    $row['executar_script'] == 1 &&
-                    !empty($row['script_alarme'])
-                ){
-
-                    $script =
-                        escapeshellarg(
-                            $row['script_alarme']
-                        );
-
-                    $comando =
-                        "php $script";
-
-                    exec(
-                        $comando .
-                        " > /dev/null 2>&1 &"
+                $script =
+                    escapeshellarg(
+                        $row['script_alarme']
                     );
 
-                }
+
+                /*
+                Mantém o comando que já funciona
+                nos sensores ambientais.
+                */
+
+                $comando =
+                    "php $script";
+
+
+                error_log(
+                    "Executando script do sensor ambiental " .
+                    $idSensor .
+                    ": " .
+                    $row['script_alarme']
+                );
+
+
+                exec(
+
+                    $comando .
+                    " > /dev/null 2>&1 &"
+
+                );
 
             }
 
-            // =================================================
-            // ATUALIZA ALARME
-            // =================================================
+        }
 
-            $sqlUpdate = "
+
+        /*
+        ================================================
+        ATUALIZA TABELA ALARME
+        ================================================
+        */
+
+        $sqlUpdate = "
 
             INSERT INTO alarme
             (
@@ -194,148 +394,354 @@ function processarAlertas($conn){
 
             ON DUPLICATE KEY UPDATE
 
-            status='$status'
+                status='$status'
 
-            ";
+        ";
 
-            $conn->query($sqlUpdate);
+
+        if(!$conn->query($sqlUpdate)){
+
+            error_log(
+
+                "Erro ao atualizar alarme do sensor " .
+                $idSensor .
+                ": " .
+                $conn->error
+
+            );
 
         }
 
     }
 
 
-    // =====================================================
-    // PROCESSAMENTO DOS EVENTOS
-    // =====================================================
+    /*
+    =====================================================
+    PROCESSAMENTO DOS SENSORES DE EVENTO
+    =====================================================
+    */
+
+    processarAlertasEventos($conn);
+
+}
+
+
+
+/*
+=========================================================
+PROCESSAMENTO DOS SENSORES DE EVENTO
+=========================================================
+*/
+
+function processarAlertasEventos($conn)
+{
+
+    /*
+    =====================================================
+    BUSCA OS EVENTOS
+    =====================================================
+    */
 
     $sqlEventos = "
 
-    SELECT
+        SELECT
 
-        id,
-        device_token,
-        canal,
-        nome_evento,
-        nivel_evento,
-        estado,
-        estado_anterior,
-        alarme_sonoro
+            id,
+            device_token,
+            canal,
+            nome_evento,
+            nivel_evento,
+            estado,
+            estado_anterior,
+            alarme_sonoro,
+            executar_script,
+            script_alarme
 
-    FROM sensores_evento
+        FROM sensores_evento
 
     ";
+
 
     $resultEventos =
         $conn->query($sqlEventos);
 
+
     if(!$resultEventos){
+
+        error_log(
+
+            "Erro ao consultar sensores_evento: " .
+            $conn->error
+
+        );
 
         return;
 
     }
 
 
-    while($evento = $resultEventos->fetch_assoc()){
+    /*
+    =====================================================
+    PROCESSA CADA EVENTO
+    =====================================================
+    */
+
+    while(
+        $evento =
+        $resultEventos->fetch_assoc()
+    ){
+
+
+        /*
+        ================================================
+        DADOS DO EVENTO
+        ================================================
+        */
 
         $idEvento =
             intval($evento['id']);
 
-        $estado =
+
+        $estadoAtual =
             intval($evento['estado']);
+
 
         $estadoAnterior =
             intval($evento['estado_anterior']);
 
+
         $alarmeSonoro =
             intval($evento['alarme_sonoro']);
 
+
+        $executarScript =
+            intval($evento['executar_script']);
+
+
         $nomeEvento =
             $evento['nome_evento'];
+
 
         $nivelEvento =
             $evento['nivel_evento'];
 
 
-        // =================================================
-        // NOVO EVENTO
-        // estado anterior = 0
-        // estado atual    = 1
-        // =================================================
+        $scriptAlarme =
+            trim(
+                $evento['script_alarme'] ?? ''
+            );
+
+
+        /*
+        =================================================
+        EVENTO ATIVADO
+        =================================================
+        */
 
         if(
-            $estado == 1 &&
+            $estadoAtual == 1 &&
             $estadoAnterior == 0
         ){
 
-            // =============================================
-            // REGISTRA NO LOG
-            // =============================================
+            /*
+            =============================================
+            OCORRÊNCIA
+            =============================================
+            */
 
-            $mensagem =
-                "Evento {$nomeEvento} ativado";
+            $ocorrencia =
+                "Evento '" .
+                $nomeEvento .
+                "' ativado no canal " .
+                $evento['canal'];
+
 
             /*
-             * IMPORTANTE:
-             *
-             * Neste momento não usamos registrarLog()
-             * porque o ID pertence a sensores_evento
-             * e não a sensores.
-             *
-             * Podemos criar posteriormente uma estrutura
-             * de log específica para eventos.
-             */
+            =============================================
+            REGISTRA LOG
+            =============================================
+            */
 
-            error_log(
-                $mensagem
+            registrarLog(
+
+                $conn,
+
+                $idEvento,
+
+                "Evento ativado",
+
+                $ocorrencia,
+
+                'evento'
+
             );
 
 
-            // =============================================
-            // ALARME SONORO
-            // =============================================
+            /*
+            =============================================
+            EXECUÇÃO DO SCRIPT
+            =============================================
+            */
 
-            if($alarmeSonoro == 1){
+            if(
+                $executarScript == 1 &&
+                $scriptAlarme != ''
+            ){
+
+                $script =
+                    escapeshellarg(
+                        $scriptAlarme
+                    );
+
 
                 /*
-                 * O processamento do som será feito pelo
-                 * painel através do stream.php.
-                 *
-                 * Aqui apenas identificamos que o evento
-                 * deve gerar alarme.
-                 */
+                Mantém o mesmo comando
+                utilizado nos sensores ambientais.
+                */
+
+                $comando =
+                    "php $script";
+
+
+                error_log(
+
+                    "Executando script do evento " .
+                    $idEvento .
+                    ": " .
+                    $scriptAlarme
+
+                );
+
+
+                exec(
+
+                    $comando .
+                    " > /dev/null 2>&1 &"
+
+                );
+
+            }
+            else{
+
+                error_log(
+
+                    "Script NÃO executado para evento " .
+                    $idEvento .
+                    " | executar_script=" .
+                    $executarScript .
+                    " | script=" .
+                    $scriptAlarme
+
+                );
 
             }
 
-        }
+
+            /*
+            =============================================
+            ALARME SONORO
+            =============================================
+            */
+
+            if($alarmeSonoro == 1){
+
+                error_log(
+
+                    "Alarme sonoro habilitado para evento " .
+                    $idEvento
+
+                );
+
+            }
 
 
-        // =================================================
-        // EVENTO ENCERRADO
-        // estado anterior = 1
-        // estado atual    = 0
-        // =================================================
-
-        if(
-            $estado == 0 &&
-            $estadoAnterior == 1
-        ){
-
-            $mensagem =
-                "Evento {$nomeEvento} normalizado";
+            /*
+            =============================================
+            DIAGNÓSTICO
+            =============================================
+            */
 
             error_log(
-                $mensagem
+
+                "Evento ativado: " .
+                $idEvento .
+                " - " .
+                $nomeEvento
+
             );
 
         }
 
 
-        // =================================================
-        // ATUALIZA ESTADO ANTERIOR
-        // =================================================
+        /*
+        =================================================
+        EVENTO NORMALIZADO
+        =================================================
 
-        if($estadoAnterior != $estado){
+        estado_anterior = 1
+        estado          = 0
+        */
+
+        if(
+            $estadoAtual == 0 &&
+            $estadoAnterior == 1
+        ){
+
+            /*
+            =============================================
+            OCORRÊNCIA
+            =============================================
+            */
+
+            $ocorrencia =
+                "Evento '" .
+                $nomeEvento .
+                "' normalizado no canal " .
+                $evento['canal'];
+
+
+            /*
+            =============================================
+            REGISTRA LOG
+            =============================================
+            */
+
+            registrarLog(
+
+                $conn,
+
+                $idEvento,
+
+                "Evento normalizado",
+
+                $ocorrencia,
+
+                'evento'
+
+            );
+
+
+            error_log(
+
+                "Evento normalizado: " .
+                $idEvento .
+                " - " .
+                $nomeEvento
+
+            );
+
+        }
+
+
+        /*
+        =================================================
+        ATUALIZA ESTADO ANTERIOR
+        =================================================
+        */
+
+        if(
+            $estadoAtual != $estadoAnterior
+        ){
 
             $stmt = $conn->prepare("
 
@@ -347,19 +753,51 @@ function processarAlertas($conn){
 
             ");
 
-            if($stmt){
 
-                $stmt->bind_param(
-                    "ii",
-                    $estado,
-                    $idEvento
+            if(!$stmt){
+
+                error_log(
+
+                    "Erro ao preparar atualização de " .
+                    "estado_anterior do evento " .
+                    $idEvento .
+                    ": " .
+                    $conn->error
+
                 );
 
-                $stmt->execute();
-
-                $stmt->close();
+                continue;
 
             }
+
+
+            $stmt->bind_param(
+
+                "ii",
+
+                $estadoAtual,
+
+                $idEvento
+
+            );
+
+
+            if(!$stmt->execute()){
+
+                error_log(
+
+                    "Erro ao atualizar estado_anterior " .
+                    "do evento " .
+                    $idEvento .
+                    ": " .
+                    $stmt->error
+
+                );
+
+            }
+
+
+            $stmt->close();
 
         }
 

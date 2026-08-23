@@ -8,7 +8,8 @@ SELECT
     logs.id_sensor,
     sensores.device_token AS nome_sensor,
     logs.data_hora,
-    logs.evento
+    logs.evento,
+    logs.ocorrencia
 FROM logs
 LEFT JOIN sensores ON sensores.id = logs.id_sensor
 ORDER BY logs.data_hora DESC
@@ -34,6 +35,7 @@ while ($row = $result->fetch_assoc()) {
         <td><?= $row['nome_sensor'] ?></td>
         <td><?= $row['data_hora'] ?></td>
         <td><?= $row['evento'] ?></td>
+        <td><?= $row['ocorrencia']?></td>
     </tr>
 <?php
 }

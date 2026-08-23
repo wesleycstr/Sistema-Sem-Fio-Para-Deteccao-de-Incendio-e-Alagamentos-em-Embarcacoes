@@ -89,7 +89,7 @@ while($row = $result->fetch_assoc()){
 
         $ultimaAtualizacao = strtotime($row['data_hora']);
 
-        $offline = (time() - $ultimaAtualizacao) > 10;
+        $offline = (time() - $ultimaAtualizacao) > 60; //Ajuste para que o sensor seja considerado off line
     }
 
     /* estado atual salvo no banco */
@@ -117,7 +117,8 @@ while($row = $result->fetch_assoc()){
             registrarLog(
                 $conn,
                 $row['id'],
-                "Sensor ficou OFFLINE"
+                "Sensor ficou OFFLINE",
+                "Nenhuma comunicação recebida há mais de 10 segundos"
             );
 
             $conn->query("
@@ -147,8 +148,8 @@ while($row = $result->fetch_assoc()){
             registrarLog(
                 $conn,
                 $row['id'],
-                //"Sensor {$row['nome']} voltou ONLINE"
-                "Sensor voltou ONLINE"
+                "Sensor voltou ONLINE",
+                "Comunicação com o sensor restabelecida"
             );
 
             $conn->query("
@@ -397,7 +398,7 @@ if(!$resultEventos){
                 time() - $ultimaAtualizacao;
 
             $offline =
-                $diferenca > 15;
+                $diferenca > 60; //Ajuste para que o sensor seja considerado offline
 
         }
 

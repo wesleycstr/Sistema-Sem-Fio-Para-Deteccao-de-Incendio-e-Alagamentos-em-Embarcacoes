@@ -7,7 +7,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 
-<title>SISCAV</title>
+<title>Sistema Atalaia</title>
 
 <style>
 
@@ -67,7 +67,7 @@ tr{
     border-radius:8px;
     cursor:pointer;
     font-size:14px;
-
+    float:right;
 }
 
 .btnConfig:hover{
@@ -93,6 +93,27 @@ tr{
     display:flex;
     gap:10px;
     margin-bottom:20px;
+    position:relative;
+
+}
+
+.btnCadastrarSensor{
+
+    margin-left:auto;
+
+    background:#1f1f1f;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 14px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
 
 }
 
@@ -187,17 +208,18 @@ tr{
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fill,minmax(230px,1fr));
+    repeat(auto-fill,minmax(170px,1fr));
 
-    gap:18px;
+    gap:10px;
 
 }
 
+
 .cardSensor{
 
-    border-radius:12px;
+    border-radius:9px;
 
-    padding:18px;
+    padding:10px;
 
     color:white;
 
@@ -205,51 +227,63 @@ tr{
 
     transition:.25s;
 
-    box-shadow:0 0 10px rgba(0,0,0,.4);
+    box-shadow:0 0 6px rgba(0,0,0,.4);
 
 }
+
 
 .cardSensor:hover{
 
-    transform:scale(1.03);
+    transform:scale(1.02);
 
 }
+
 
 .cardTitulo{
 
-    font-size:20px;
+    font-size:15px;
 
     font-weight:bold;
 
-    margin-bottom:15px;
+    margin-bottom:8px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 
 }
+
 
 .cardValor{
 
-    font-size:17px;
+    font-size:13px;
 
-    margin:8px 0;
+    margin:4px 0;
 
 }
 
+
 .cardStatus{
 
-    margin-top:15px;
+    margin-top:8px;
 
     text-align:center;
 
-    font-size:22px;
+    font-size:15px;
 
     font-weight:bold;
 
 }
+
 
 .normal{
 
     background:#2e7d32;
 
 }
+
 
 .atencao{
 
@@ -259,15 +293,18 @@ tr{
 
 }
 
+
 .offline{
 
     background:#616161;
 
 }
 
+
 .cardSensor.alarme{
 
     background:#c62828;
+
     animation:piscar 1s infinite;
 
 }
@@ -292,6 +329,219 @@ tr{
 
 }
 
+.opcaoSistema{
+
+    background:#1e1e1e;
+
+    padding:20px;
+
+    margin-bottom:15px;
+
+    border-radius:10px;
+
+    box-shadow:0 0 8px rgba(0,0,0,.3);
+
+}
+
+.opcaoSistema h3{
+
+    margin-top:0;
+
+}
+
+.opcaoSistema p{
+
+    color:#bbb;
+
+    margin-bottom:20px;
+
+}
+
+.botoesAlarme{
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+}
+
+
+.btnAtivarAlarme{
+
+    background:#2e7d32;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.btnAtivarAlarme:hover{
+
+    background:#388e3c;
+
+}
+
+
+.btnDesativarAlarme{
+
+    background:#c62828;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.btnDesativarAlarme:hover{
+
+    background:#d32f2f;
+
+}
+
+.tituloOpcao{
+
+    margin-top:25px;
+
+}
+
+
+.btnAtivarScript{
+
+    background:#2e7d32;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.btnAtivarScript:hover{
+
+    background:#388e3c;
+
+}
+
+
+.btnDesativarScript{
+
+    background:#c62828;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.btnDesativarScript:hover{
+
+    background:#d32f2f;
+
+}
+
+.opcaoSistema h2{
+
+    margin-top:0;
+
+    margin-bottom:25px;
+
+    font-size:22px;
+
+    border-bottom:1px solid #444;
+
+    padding-bottom:12px;
+
+}
+
+.btnExportarLogs{
+
+    background:#1565c0;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.btnExportarLogs:hover{
+
+    background:#1976d2;
+
+}
+
+
+.btnApagarLogs{
+
+    background:#b71c1c;
+
+    border:none;
+
+    color:white;
+
+    padding:10px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+.btnApagarLogs:hover{
+
+    background:#d32f2f;
+
+}
+
 </style>
 
 </head>
@@ -300,41 +550,53 @@ tr{
 
 <div class="tabs">
 
-<div style="margin-bottom:20px;">
+    <button class="tabButton active"
+    onclick="abrirAba('sensores')">
 
-<button class="btnConfig"
-onclick="abrirCadastroSensor()">
+        🌡 Sensores Ambientais
 
-➕ Cadastrar Sensor
+    </button>
 
-</button>
 
-</div>
+    <button class="tabButton"
+    onclick="abrirAba('eventos')">
 
-<button class="tabButton active"
-onclick="abrirAba('sensores')">
+        🟢🔴 Sensores de Eventos
 
-Sensores
+    </button>
 
-</button>
-<button class="tabButton"
-onclick="abrirAba('eventos')">
 
-Eventos
+    <button class="tabButton"
+    onclick="abrirAba('painel')">
 
-</button>
+        ▦ Visualização em Grid
 
-<button class="tabButton"
-onclick="abrirAba('logs')">
+    </button>
 
-Logs
 
-</button>
+    <button class="tabButton"
+    onclick="abrirAba('logs')">
 
-<button class="tabButton"
-onclick="abrirAba('painel')">
-🖥 Painel
-</button>
+        📓 Logs
+
+    </button>
+
+
+    <button class="tabButton"
+    onclick="abrirAba('opcoes')">
+
+        ⚙️ Opções
+
+    </button>
+
+
+    <button
+    class="btnCadastrarSensor"
+    onclick="abrirCadastroSensor()">
+
+        ➕ Cadastrar Sensor
+
+    </button>
 
 </div>
 
@@ -432,6 +694,7 @@ style="display:none;">
 <th>ID</th>
 <th>Data/Hora</th>
 <th>Registro</th>
+<th>Ocorrência</th>
 
 </tr>
 
@@ -513,7 +776,7 @@ Executar script em caso de alarme
 type="text"
 id="scriptAlarme"
 class="campo"
-placeholder="/home/usuario/scripts/alarme.sh">
+placeholder="/grafana-server/web/script.php">
 
 <br><br>
 
@@ -527,6 +790,207 @@ Cancelar
 
 </div>
 
+</div>
+
+<!-- ABA DE OPÇÕES -->
+
+<div id="abaOpcoes"
+     class="aba"
+     style="display:none;">
+
+    <div class="opcaoSistema">
+
+        <h2>⚙️ Opções para sensores ambientais</h2>
+
+        <!-- ==========================================
+            ALARMES
+        =========================================== -->
+
+        <h3>🔊 Alarmes dos Sensores Ambientais</h3>
+
+        <p>
+            Controle o alarme sonoro de todos os sensores ambientais.
+        </p>
+
+        <div class="botoesAlarme">
+
+            <button
+                class="btnAtivarAlarme"
+                onclick="ativarTodosAlarmes()">
+
+                🔊 Ativar todos os alarmes
+
+            </button>
+
+            <button
+                class="btnDesativarAlarme"
+                onclick="desativarTodosAlarmes()">
+
+                🔇 Desativar todos os alarmes
+
+            </button>
+
+        </div> <p> <p>
+
+        <!-- ==========================================
+            SCRIPTS
+        =========================================== -->
+
+        <h3 class="tituloOpcao">
+
+            🖥 Execução de Scripts dos Sensores Ambientais
+
+        </h3>
+
+    <p>
+
+        Controle a execução de scripts de alarme
+        de todos os sensores ambientais.
+
+    </p>
+
+        <div class="botoesAlarme">
+
+            <button
+                class="btnAtivarScript"
+                onclick="ativarTodosScripts()">
+
+                ▶ Ativar todos os scripts
+
+            </button>
+
+            <button
+                class="btnDesativarScript"
+                onclick="desativarTodosScripts()">
+
+                ⏹ Desativar todos os scripts
+
+            </button>
+
+        </div>
+    </div>
+    <div class="opcaoSistema">
+
+        <h2>⚙️ Opções para sensores de eventos</h2>
+
+
+        <!-- ==========================================
+            ALARMES DOS SENSORES DE EVENTOS
+        =========================================== -->
+
+        <h3>🔊 Alarmes dos Sensores de Eventos</h3>
+
+        <p>
+            Controle o alarme sonoro de todos os sensores
+            de eventos.
+        </p>
+
+        <div class="botoesAlarme">
+
+            <button
+                class="btnAtivarAlarme"
+                onclick="ativarTodosAlarmesEventos()">
+
+                🔊 Ativar todos os alarmes
+
+            </button>
+
+            <button
+                class="btnDesativarAlarme"
+                onclick="desativarTodosAlarmesEventos()">
+
+                🔇 Desativar todos os alarmes
+
+            </button>
+
+        </div>
+        <p> <p>
+
+        <!-- ==========================================
+            SCRIPTS DOS SENSORES DE EVENTOS
+        =========================================== -->
+
+        <h3 class="tituloOpcao">
+
+            🖥 Execução de Scripts dos Sensores de Eventos
+
+        </h3>
+
+        <p>
+
+            Controle a execução de scripts de alarme
+            de todos os sensores de eventos.
+
+        </p>
+
+        <div class="botoesAlarme">
+
+            <button
+                class="btnAtivarScript"
+                onclick="ativarTodosScriptsEventos()">
+
+                ▶ Ativar todos os scripts
+
+            </button>
+
+
+            <button
+                class="btnDesativarScript"
+                onclick="desativarTodosScriptsEventos()">
+
+                ⏹ Desativar todos os scripts
+
+            </button>
+
+        </div>
+
+        <div class="opcaoSistema">
+
+            <h2>📋 Gerenciamento dos Logs</h2>
+
+            <h3>📤 Exportação dos Logs</h3>
+
+            <p>
+                Exporte todos os registros de log armazenados no sistema.
+            </p>
+
+            <div class="botoesAlarme">
+
+                <button
+                    class="btnExportarLogs"
+                    onclick="exportarTodosLogs()">
+
+                    📤 Exportar todos os logs
+
+                </button>
+
+            </div>
+            <p><p>
+
+            <h3 class="tituloOpcao">
+                🗑️ Exclusão dos Logs
+            </h3>
+
+            <p>
+                Apague permanentemente todos os registros de log
+                armazenados no sistema.
+            </p>
+
+            <div class="botoesAlarme">
+
+                <button
+                    class="btnApagarLogs"
+                    onclick="apagarTodosLogs()">
+
+                    🗑️ Apagar todos os logs
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 </div>
 
 <script>
@@ -637,94 +1101,105 @@ function salvarConfig(){
 </audio>
 
 <script>
-    const som = document.getElementById("somAlarme");
+function abrirAba(nome){
 
-let tocando = false;
+    // ==========================================
+    // ESCONDE TODAS AS ABAS
+    // ==========================================
 
-function verificarAlarmes(){
-
-    fetch("verificar_alarme.php")
-
-    .then(response => response.json())
-
-    .then(data => {
-
-        if(data.alarme == true){
-
-            if(!tocando){
-
-                som.play();
-
-                tocando = true;
-
-            }
-
-        }else{
-
-            som.pause();
-
-            som.currentTime = 0;
-
-            tocando = false;
-
-        }
-
-    });
-
-}
-
-setInterval(verificarAlarmes, 1000);
-</script>
-
-<script>
-    document.body.addEventListener("click", () => {
-    som.play().then(() => {
-        som.pause();
-        som.currentTime = 0;
-    });
-}, { once: true });
-</script>
-<script>
- function abrirAba(nome){
-
-    // Esconde todas as abas
     document.getElementById("abaSensores").style.display = "none";
-    document.getElementById("abaEventos").style.display="none";
+
+    document.getElementById("abaEventos").style.display = "none";
+
     document.getElementById("abaLogs").style.display = "none";
+
     document.getElementById("abaPainel").style.display = "none";
 
-    // Remove o botão ativo
+    document.getElementById("abaOpcoes").style.display = "none";
+
+
+    // ==========================================
+    // REMOVE O BOTÃO ATIVO
+    // ==========================================
+
     document.querySelectorAll(".tabButton")
-        .forEach(btn => btn.classList.remove("active"));
+        .forEach(function(btn){
+
+            btn.classList.remove("active");
+
+        });
+
+
+    // ==========================================
+    // ABRE A ABA SELECIONADA
+    // ==========================================
 
     switch(nome){
 
         case "sensores":
 
-            document.getElementById("abaSensores").style.display = "block";
-            document.querySelectorAll(".tabButton")[0].classList.add("active");
+            document.getElementById(
+                "abaSensores"
+            ).style.display = "block";
+
+            document.querySelectorAll(
+                ".tabButton"
+            )[0].classList.add("active");
+
             break;
+
 
         case "eventos":
 
-            document.getElementById("abaEventos").style.display="block";
-            document.querySelectorAll(".tabButton")[1]
+            document.getElementById(
+                "abaEventos"
+            ).style.display = "block";
 
-            .classList.add("active");
+            document.querySelectorAll(
+                ".tabButton"
+            )[1].classList.add("active");
 
-        break;
-
-        case "logs":
-
-            document.getElementById("abaLogs").style.display = "block";
-            document.querySelectorAll(".tabButton")[2].classList.add("active");
             break;
+
 
         case "painel":
 
-            document.getElementById("abaPainel").style.display = "block";
-            document.querySelectorAll(".tabButton")[3].classList.add("active");
+            document.getElementById(
+                "abaPainel"
+            ).style.display = "block";
+
+            document.querySelectorAll(
+                ".tabButton"
+            )[2].classList.add("active");
+
             break;
+
+
+        case "logs":
+
+            document.getElementById(
+                "abaLogs"
+            ).style.display = "block";
+
+            document.querySelectorAll(
+                ".tabButton"
+            )[3].classList.add("active");
+
+            break;
+
+
+        case "opcoes":
+
+            document.getElementById(
+                "abaOpcoes"
+            ).style.display = "block";
+
+            document.querySelectorAll(
+                ".tabButton"
+            )[4].classList.add("active");
+
+            break;
+
     }
 
 }
@@ -1113,15 +1588,15 @@ onchange="alterarTipoSensor()">
         id="nivelEvento"
         class="campo">
 
-        <option value="Informacao">
+        <option value="informacao">
             ℹ Informação
         </option>
 
-        <option value="Atencao">
+        <option value="atencao">
             ⚠ Atenção
         </option>
 
-        <option value="Critico" selected>
+        <option value="critico" selected>
             🚨 Crítico
         </option>
 
@@ -1259,15 +1734,15 @@ class="campo">
 id="editarNivelEvento"
 class="campo">
 
-<option value="Informacao">
+<option value="informacao">
 ℹ Informação
 </option>
 
-<option value="Atencao">
+<option value="atencao">
 ⚠ Atenção
 </option>
 
-<option value="Critico">
+<option value="critico">
 🚨 Crítico
 </option>
 
@@ -1282,6 +1757,30 @@ id="editarAlarmeSonoro">
 Ativar alarme sonoro
 
 </label>
+
+<br><br>
+
+<label>
+
+    <input
+        type="checkbox"
+        id="editarExecutarScript"
+    >
+
+    Executar script quando o evento for ativado
+
+</label>
+
+<br><br>
+
+<label>Script de Alarme</label>
+
+    <input
+        type="text"
+        id="editarScriptAlarme"
+        class="campo"
+        placeholder="/var/www/html/alarme_evento.php"
+    >
 
 <br><br>
 
@@ -1352,10 +1851,15 @@ function salvarSensor(){
     document.getElementById("novoCanal").value;
 
     const alarmeSonoro =
-
     document.getElementById(
     "novoAlarmeSonoro"
     ).checked ? 1 : 0;
+
+    const executarScript =
+    document.getElementById("novoExecutarScript").checked ? 1 : 0;
+
+    const scriptAlarme =
+    document.getElementById("novoScriptAlarme").value;
 
     fetch(
 
@@ -1405,7 +1909,13 @@ function salvarSensor(){
         encodeURIComponent(nivelEvento) +
 
         "&canal=" +
-        encodeURIComponent(canal)
+        encodeURIComponent(canal) +
+
+        "&executarScript=" +
+        executarScript +
+
+        "&scriptAlarme=" +
+        encodeURIComponent(scriptAlarme)
 
     })
 
@@ -1532,23 +2042,95 @@ function abrirModalEvento(id){
 
         }
 
-        document.getElementById("eventoEditandoId").value =
-            evento.id;
+        // ==========================================
+        // ID
+        // ==========================================
 
-        document.getElementById("editarCanal").value =
-            evento.canal;
+        document.getElementById(
+            "eventoEditandoId"
+        ).value = evento.id;
 
-        document.getElementById("editarNomeEvento").value =
-            evento.nome_evento;
 
-        document.getElementById("editarNivelEvento").value =
-            evento.nivel_evento;
+        // ==========================================
+        // CANAL
+        // ==========================================
 
-        document.getElementById("editarAlarmeSonoro").checked =
-            evento.alarme_sonoro == 1;
+        document.getElementById(
+            "editarCanal"
+        ).value = evento.canal;
 
-        document.getElementById("modalEditarEvento").style.display =
-            "flex";
+
+        // ==========================================
+        // NOME
+        // ==========================================
+
+        document.getElementById(
+            "editarNomeEvento"
+        ).value = evento.nome_evento;
+
+
+        // ==========================================
+        // NÍVEL
+        // ==========================================
+
+        document.getElementById(
+            "editarNivelEvento"
+        ).value = evento.nivel_evento;
+
+
+        // ==========================================
+        // ALARME SONORO
+        // ==========================================
+
+        const checkboxAlarme =
+            document.getElementById(
+                "editarAlarmeSonoro"
+            );
+
+        checkboxAlarme.checked =
+            Number(evento.alarme_sonoro) === 1;
+
+
+        // Guarda o valor original
+        checkboxAlarme.dataset.original =
+            checkboxAlarme.checked ? "1" : "0";
+
+
+        // ==========================================
+        // EXECUÇÃO DE SCRIPT
+        // ==========================================
+
+        const checkboxScript =
+            document.getElementById(
+                "editarExecutarScript"
+            );
+
+        checkboxScript.checked =
+            Number(evento.executar_script) === 1;
+
+
+        // Guarda o valor original
+        checkboxScript.dataset.original =
+            checkboxScript.checked ? "1" : "0";
+
+
+        // ==========================================
+        // CAMINHO DO SCRIPT
+        // ==========================================
+
+        document.getElementById(
+            "editarScriptAlarme"
+        ).value =
+            evento.script_alarme || "";
+
+
+        // ==========================================
+        // ABRE MODAL
+        // ==========================================
+
+        document.getElementById(
+            "modalEditarEvento"
+        ).style.display = "flex";
 
     })
 
@@ -1561,9 +2143,8 @@ function abrirModalEvento(id){
     });
 
 }
-</script>
 
-<script>
+
 function salvarEdicaoEvento(){
 
     const id =
@@ -1591,6 +2172,21 @@ function salvarEdicaoEvento(){
             "editarAlarmeSonoro"
         ).checked ? 1 : 0;
 
+    const executarScript =
+        document.getElementById(
+            "editarExecutarScript"
+        ).checked ? 1 : 0;
+
+    const scriptAlarme =
+        document.getElementById(
+            "editarScriptAlarme"
+        ).value;
+
+
+    // ==========================================
+    // VALIDAÇÃO
+    // ==========================================
+
     if(nomeEvento.trim() === ""){
 
         alert("Informe o nome do evento.");
@@ -1598,6 +2194,46 @@ function salvarEdicaoEvento(){
         return;
 
     }
+
+
+    // ==========================================
+    // DEBUG
+    // ==========================================
+
+    console.log("ID:", id);
+    console.log("Canal:", canal);
+    console.log("Alarme sonoro:", alarmeSonoro);
+    console.log("Executar script:", executarScript);
+    console.log("Script:", scriptAlarme);
+
+
+    // ==========================================
+    // ENVIO
+    // ==========================================
+
+    const dados =
+
+        "id=" +
+        encodeURIComponent(id) +
+
+        "&canal=" +
+        encodeURIComponent(canal) +
+
+        "&nomeEvento=" +
+        encodeURIComponent(nomeEvento) +
+
+        "&nivelEvento=" +
+        encodeURIComponent(nivelEvento) +
+
+        "&alarmeSonoro=" +
+        encodeURIComponent(alarmeSonoro) +
+
+        "&executarScript=" +
+        encodeURIComponent(executarScript) +
+
+        "&scriptAlarme=" +
+        encodeURIComponent(scriptAlarme);
+
 
     fetch(
         window.location.origin +
@@ -1611,22 +2247,7 @@ function salvarEdicaoEvento(){
                 "application/x-www-form-urlencoded"
             },
 
-            body:
-
-                "id=" +
-                encodeURIComponent(id) +
-
-                "&canal=" +
-                encodeURIComponent(canal) +
-
-                "&nomeEvento=" +
-                encodeURIComponent(nomeEvento) +
-
-                "&nivelEvento=" +
-                encodeURIComponent(nivelEvento) +
-
-                "&alarmeSonoro=" +
-                alarmeSonoro
+            body:dados
 
         }
     )
@@ -1634,6 +2255,11 @@ function salvarEdicaoEvento(){
     .then(response => response.text())
 
     .then(data => {
+
+        console.log(
+            "Resposta:",
+            data
+        );
 
         alert(data);
 
@@ -1645,11 +2271,14 @@ function salvarEdicaoEvento(){
 
         console.error(error);
 
-        alert("Erro ao editar evento.");
+        alert(
+            "Erro ao editar evento."
+        );
 
     });
 
 }
+
 
 function fecharModalEditarEvento(){
 
@@ -1707,6 +2336,330 @@ function excluirEvento(id){
 
 }
 
+</script>
+
+<script>
+
+function ativarTodosAlarmes(){
+
+    if(!confirm(
+        "Deseja ativar o alarme sonoro de TODOS os sensores ambientais?"
+    )){
+
+        return;
+
+    }
+
+    fetch("ativar_todos_alarmes.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao ativar os alarmes."
+        );
+
+    });
+
+}
+
+function desativarTodosAlarmes(){
+
+    if(!confirm(
+        "Deseja desativar o alarme sonoro de TODOS os sensores ambientais?"
+    )){
+
+        return;
+
+    }
+
+    fetch("desativar_todos_alarmes.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao desativar os alarmes."
+        );
+
+    });
+
+}
+
+function ativarTodosScripts(){
+
+    if(!confirm(
+        "Deseja ativar a execução de scripts de TODOS os sensores ambientais?"
+    )){
+
+        return;
+
+    }
+
+    fetch("ativar_todos_scripts.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao ativar os scripts."
+        );
+
+    });
+
+}
+
+function desativarTodosScripts(){
+
+    if(!confirm(
+        "Deseja desativar a execução de scripts de TODOS os sensores ambientais?"
+    )){
+
+        return;
+
+    }
+
+    fetch("desativar_todos_scripts.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao desativar os scripts."
+        );
+
+    });
+
+}
+
+function ativarTodosAlarmesEventos(){
+
+    if(!confirm(
+        "Deseja ativar o alarme sonoro de TODOS os sensores de eventos?"
+    )){
+
+        return;
+
+    }
+
+    fetch("ativar_todos_alarmes_eventos.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao ativar os alarmes dos sensores de eventos."
+        );
+
+    });
+
+}
+
+function desativarTodosAlarmesEventos(){
+
+    if(!confirm(
+        "Deseja desativar o alarme sonoro de TODOS os sensores de eventos?"
+    )){
+
+        return;
+
+    }
+
+    fetch("desativar_todos_alarmes_eventos.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao desativar os alarmes dos sensores de eventos."
+        );
+
+    });
+
+}
+
+function ativarTodosScriptsEventos(){
+
+    if(!confirm(
+        "Deseja ativar a execução de scripts de TODOS os sensores de eventos?"
+    )){
+
+        return;
+
+    }
+
+    fetch("ativar_todos_scripts_eventos.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao ativar os scripts dos sensores de eventos."
+        );
+
+    });
+
+}
+
+function desativarTodosScriptsEventos(){
+
+    if(!confirm(
+        "Deseja desativar a execução de scripts de TODOS os sensores de eventos?"
+    )){
+
+        return;
+
+    }
+
+    fetch("desativar_todos_scripts_eventos.php")
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        alert(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao desativar os scripts dos sensores de eventos."
+        );
+
+    });
+
+}
+</script>
+
+<script>
+    function exportarTodosLogs(){
+
+        window.location.href =
+            "exportar_logs.php";
+
+    }
+
+    function apagarTodosLogs(){
+
+    const confirmar = confirm(
+
+        "ATENÇÃO!\n\n" +
+
+        "Todos os registros de logs serão apagados " +
+        "permanentemente.\n\n" +
+
+        "Esta operação não pode ser desfeita.\n\n" +
+
+        "Deseja realmente continuar?"
+
+    );
+
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+
+    fetch("apagar_todos_logs.php")
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.mensagem);
+
+
+        if(data.sucesso){
+
+            /*
+             * Atualiza a aba de logs
+             */
+
+            abrirAba("logs");
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Erro ao apagar os logs."
+        );
+
+    });
+
+}
 </script>
 </body>
 </html>

@@ -25,7 +25,9 @@ $stmt = $conn->prepare("
         localizacao,
         nome_evento,
         nivel_evento,
-        alarme_sonoro
+        alarme_sonoro,
+        executar_script,
+        script_alarme
 
     FROM sensores_evento
 

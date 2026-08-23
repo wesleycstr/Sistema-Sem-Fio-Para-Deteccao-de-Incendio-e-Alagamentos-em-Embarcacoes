@@ -45,6 +45,22 @@ $_POST['nivelEvento'] ?? 'critico';
 
 $canal = intval($_POST['canal'] ?? 0);
 
+/*Campos da execução de scripts em eventos*/
+
+$executarScript =
+intval($_POST['executarScript'] ?? 0);
+
+$scriptAlarme =
+trim($_POST['scriptAlarme'] ?? '');
+
+var_dump([
+    'executarScript' => $executarScript,
+    'scriptAlarme' => $scriptAlarme
+]);
+
+exit;
+
+
 // ======================================================
 // VALIDAÇÕES
 // ======================================================
@@ -177,59 +193,45 @@ die("Informe o nome do evento.");
 
 }
 
+
 $stmt = $conn->prepare("
 
 INSERT INTO sensores_evento
-
 (
-
-device_token,
-
-canal,
-
-chave_secreta,
-
-localizacao,
-
-nome_evento,
-
-nivel_evento,
-
-alarme_sonoro,
-
-offline,
-
-ordem_eventos
-
+    device_token,
+    canal,
+    chave_secreta,
+    localizacao,
+    nome_evento,
+    nivel_evento,
+    alarme_sonoro,
+    executar_script,
+    script_alarme,
+    offline,
+    ordem_eventos
 )
 
 VALUES
-
 (
-
-?,?,?,?,?,?,?,0,0
-
+    ?,?,?,?,?,?,
+    ?,?,?,0,0
 )
 
 ");
 
 $stmt->bind_param(
 
-"sissssi",
+    "sissssiss",
 
-$token,
-
-$canal,
-
-$chave,
-
-$localizacao,
-
-$nomeEvento,
-
-$nivelEvento,
-
-$alarmeSonoro
+    $token,
+    $canal,
+    $chave,
+    $localizacao,
+    $nomeEvento,
+    $nivelEvento,
+    $alarmeSonoro,
+    $executarScript,
+    $scriptAlarme
 
 );
 

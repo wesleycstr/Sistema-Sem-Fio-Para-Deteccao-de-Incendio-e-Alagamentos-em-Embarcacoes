@@ -1,20 +1,49 @@
 <?php
 
-function registrarLog($conn, $idSensor, $evento){
+function registrarLog(
+    $conn,
+    $idSensor,
+    $evento,
+    $ocorrencia = '',
+    $tipoSensor = 'ambiental'
+){
 
-    $evento = $conn->real_escape_string($evento);
+    $stmt = $conn->prepare("
 
-    $sql = "
+        INSERT INTO logs
+        (
+            data_hora,
+            id_sensor,
+            tipo_sensor,
+            evento,
+            ocorrencia
+        )
 
-    INSERT INTO logs
-    (id_sensor, evento)
+        VALUES
+        (
+            NOW(),
+            ?,
+            ?,
+            ?,
+            ?
+        )
 
-    VALUES
+    ");
 
-    ('$idSensor', '$evento')
+    if(!$stmt){
 
-    ";
+        return false;
 
-    $conn->query($sql);
+    }
+
+    $stmt->bind_param(
+        "isss",
+        $idSensor,
+        $tipoSensor,
+        $evento,
+        $ocorrencia
+    );
+
+    return $stmt->execute();
 
 }

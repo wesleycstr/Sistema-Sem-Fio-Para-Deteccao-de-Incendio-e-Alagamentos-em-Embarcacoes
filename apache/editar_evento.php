@@ -2,20 +2,36 @@
 
 include 'conexao.php';
 
+
+// =====================================================
+// DADOS RECEBIDOS
+// =====================================================
+
 $id =
-intval($_POST['id'] ?? 0);
+    intval($_POST['id'] ?? 0);
 
 $canal =
-intval($_POST['canal'] ?? 0);
+    intval($_POST['canal'] ?? 0);
 
 $nomeEvento =
-trim($_POST['nomeEvento'] ?? '');
+    trim($_POST['nomeEvento'] ?? '');
 
 $nivelEvento =
-$_POST['nivelEvento'] ?? '';
+    $_POST['nivelEvento'] ?? '';
 
 $alarmeSonoro =
-intval($_POST['alarmeSonoro'] ?? 0);
+    intval($_POST['alarmeSonoro'] ?? 0);
+
+$executarScript =
+    intval($_POST['executarScript'] ?? 0);
+
+$scriptAlarme =
+    trim($_POST['scriptAlarme'] ?? '');
+
+
+// =====================================================
+// VALIDAÇÕES
+// =====================================================
 
 if($id <= 0){
 
@@ -23,17 +39,20 @@ if($id <= 0){
 
 }
 
+
 if($canal <= 0){
 
     die("Canal inválido.");
 
 }
 
+
 if($nomeEvento == ""){
 
     die("Nome do evento obrigatório.");
 
 }
+
 
 if(
     $nivelEvento != "informacao" &&
@@ -45,6 +64,11 @@ if(
 
 }
 
+
+// =====================================================
+// UPDATE
+// =====================================================
+
 $stmt = $conn->prepare("
 
     UPDATE sensores_evento
@@ -54,23 +78,37 @@ $stmt = $conn->prepare("
         canal = ?,
         nome_evento = ?,
         nivel_evento = ?,
-        alarme_sonoro = ?
+        alarme_sonoro = ?,
+        executar_script = ?,
+        script_alarme = ?
 
     WHERE id = ?
 
 ");
 
+
+if(!$stmt){
+
+    die(
+        "Erro ao preparar SQL: " .
+        $conn->error
+    );
+
+}
+
+
 $stmt->bind_param(
-
-    "issii",
-
+    "issiisi",
     $canal,
     $nomeEvento,
     $nivelEvento,
     $alarmeSonoro,
+    $executarScript,
+    $scriptAlarme,
     $id
 
 );
+
 
 if($stmt->execute()){
 
@@ -78,7 +116,13 @@ if($stmt->execute()){
 
 }else{
 
-    echo "Erro ao alterar evento: " .
-         $stmt->error;
+    echo
+        "Erro ao alterar evento: " .
+        $stmt->error;
 
 }
+
+
+$stmt->close();
+
+?>
