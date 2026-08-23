@@ -5,7 +5,7 @@ Trabalho de Conclusão de Curso em Desenvolvimento para Curso Superior de Tecnol
 <img width="1280" height="720" alt="Imagens do TCC" src="https://github.com/user-attachments/assets/c670eca9-6129-4c8f-bb2c-273c1274db83" />
 <details>
 <summary>RESUMO</summary>
-Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema sem fio  voltado ao monitoramento, detecção e emissão de alertas para incêndios e alagamentos em embarcações.  O sistema foi concebido a partir da utilização de plataformas microcontroladas do tipo ESP8266 integradas a sensores de temperatura, umidade, gases e nível de água. O monitoramento é realizado por meio de plataforma própria e por dashboads do Grafana.
+Neste projeto, descreve-se o desenvolvimento e a implementação de um sistema sem fio  voltado ao monitoramento, detecção e emissão de alertas para incêndios e alagamentos em embarcações.  O sistema foi concebido a partir da utilização de plataformas microcontroladas do tipo ESP8266 integradas a sensores de temperatura, umidade, gases e nível de água. O monitoramento e configuração é realizado por meio de plataforma própria e também pode-se utilizar dashboads como do Grafana.
 </details>
 
 <details>
@@ -16,7 +16,7 @@ Quando a fumaça ou a água se espalham pelos corredores, fica difícil definir 
 
 Uma maneira de acelerar essa detecção seria através de sistemas automatizados que monitoram e avisam sobre esses eventos. No entanto, tais sistemas geralmente apresentam alto custo e complexidade de implementação quando levamos em consideração a ampla variedade dos meios navais existentes na atualidade. 
 
-Este trabalho propõe uma alternativa de baixo custo e grande potencial baseada no uso de dispositivos Internet of Things (IoT) em uma rede sem fio e Grafana. Considerando critérios como custo, facilidade de instalação e funcionalidade, descreve-se como desenvolver um sistema utilizando plataformas microcontroladas e diferentes sensores, capazes de monitorar e identificar avarias a bordo de embarcações de forma confiável.
+Este trabalho propõe uma alternativa de baixo custo e grande potencial baseada no uso de dispositivos Internet of Things (IoT) em uma rede sem fio. Considerando critérios como custo, facilidade de instalação e funcionalidade, descreve-se como desenvolver um sistema utilizando plataformas microcontroladas e diferentes sensores, capazes de monitorar e identificar avarias a bordo de embarcações de forma confiável.
 </details>
 
 <details>
@@ -24,14 +24,14 @@ Este trabalho propõe uma alternativa de baixo custo e grande potencial baseada 
   
 ### Objetivos Gerais
   
-Este trabalho tem como objetivo desenvolver um sistema de baixo custo em rede de computadores voltado à segurança da navegação aquaviária, capaz de realizar o monitoramento contínuo de variáveis ambientais, detectar situações anômalas em tempo real e emitir alertas adequados, contribuindo para a tomada rápida de decisões e para a prevenção de acidentes durante a navegação.
+Este trabalho tem como objetivo desenvolver um sistema de baixo custo em uma rede sem fio voltado à segurança da navegação aquaviária, capaz de realizar o monitoramento contínuo de variáveis ambientais, detectar situações anômalas em tempo real e emitir alertas adequados, contribuindo para a tomada rápida de decisões e para a prevenção de acidentes durante a navegação.
 
 ### Objetivos Específicos
 
 a) Desenvolver protótipos de sensores capazes de monitorar variáveis ambientais e enviar dados por meio de rede sem fio;<br>
-b) Configurar ambiente com servidor web, banco de dados e grafana;<br>
-c) Desenvolver interface gráfica para acompanhamento por meio de dashboards; e<br>
-d) Desenvolver interface gráfica para monitoramento de alarmes.
+b) Configurar ambiente com servidor web e banco de dados;<br>
+c) Desenvolver interface gráfica para monitoramento das variáveis; e<br>
+d) Desenvolver interface gráfica para realização de configurações.
 </details>
 
 <details>
@@ -41,7 +41,7 @@ Esta seção descreve a estrutura do sistema proposto, bem como os componentes u
 ### Visão geral do sistema
 O sistema desenvolvido é estruturado em três processos principais: sensoriamento, comunicação e processamento. Esses processos são integrados de forma a viabilizar o monitoramento contínuo e em tempo real das condições ambientais da embarcação. 
 
-O processo de sensoriamento é composto por sensores e microcontroladores responsáveis pela aquisição periódica de variáveis como temperatura, concentração de gases e presença de água. Esses dispositivos realizam o pré-processamento dos dados e efetuam sua transmissão ao servidor por meio de uma rede sem fio e protocolo HTTP para processamento.
+O processo de sensoriamento é composto por sensores e microcontroladores responsáveis pela aquisição periódica de variáveis como temperatura, umidade, concentração de gases e presença de água. Esses dispositivos realizam o pré-processamento dos dados e efetuam sua transmissão ao servidor por meio de uma rede sem fio e protocolo HTTP.
 
 Durante o processamento, os dados coletados são recebidos por um servidor, onde são tratados e armazenados em um banco de dados. Essa abordagem permite a organização estruturada das informações, como a identificação dos sensores e variáveis monitoradas. Como resultado, torna-se possível a realização de análises históricas, correlação entre variáveis e identificação de padrões que possam indicar situações de risco ou comportamento anômalo do ambiente monitorado.
 
