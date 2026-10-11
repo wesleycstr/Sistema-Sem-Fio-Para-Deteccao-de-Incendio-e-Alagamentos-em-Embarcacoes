@@ -9,22 +9,22 @@
 // =====================================================
 // CONFIGURAÇÕES WIFI
 // =====================================================
-const char* ssid = "Net_Wifi_2G";
-const char* password = "VU2E,dSAtJ";
+const char* ssid = "Rede_IoT";
+const char* password = "Sly@11011984";
 
 // =====================================================
 // SERVIDOR HTTPS
 // =====================================================
 const char* serverUrl =
-"https://192.168.0.41/api/sensores.php";
+//"https://192.168.0.100/api/sensores.php";
+"http://192.168.0.100/api/sensores.php";
 
 // =====================================================
 // AUTENTICAÇÃO
 // =====================================================
-const char* DEVICE_TOKEN = "sensor_azul";
+const char* DEVICE_TOKEN = "sensor_caixinha";
 
-const char* SECRET_KEY =
-"CHAVE_SUPER_SECRETA_123";
+const char* SECRET_KEY = "8£7uNf-Z`4rn";
 
 // =====================================================
 // PINOS
@@ -193,6 +193,10 @@ float lerMQ7() {
 // =====================================================
 // ENVIO HTTPS SEGURO
 // =====================================================
+// =====================================================
+// ENVIO HTTP
+// =====================================================
+
 void enviarDados(float temperatura,
                  float umidade,
                  float gas)
@@ -204,16 +208,10 @@ void enviarDados(float temperatura,
     conectarWiFi();
   }
 
+  //WiFiClient client;
   BearSSL::WiFiClientSecure client;
 
-  // =================================================
-  // PRODUÇÃO:
-  // use fingerprint ou certificado CA
-  // =================================================
-
-  client.setInsecure();
-
-  HTTPClient https;
+  HTTPClient http;
 
   // =================================================
   // JSON
@@ -221,7 +219,7 @@ void enviarDados(float temperatura,
 
   DynamicJsonDocument doc(512);
 
-  doc["sensor"] = "1";
+  doc["sensor"] = DEVICE_TOKEN;
   doc["temperatura"] = temperatura;
   doc["umidade"] = umidade;
   doc["gas"] = gas;
@@ -245,34 +243,46 @@ void enviarDados(float temperatura,
   String assinatura =
     gerarHash(payload, timestamp);
 
+  Serial.println("================================");
+  Serial.println("ENVIO PARA O SERVIDOR");
+  Serial.println("================================");
+
   Serial.println("Payload:");
   Serial.println(payload);
+
+  Serial.println("Timestamp:");
+  Serial.println(timestamp);
 
   Serial.println("Hash:");
   Serial.println(assinatura);
 
   // =================================================
-  // HTTPS
+  // HTTP
   // =================================================
 
-  https.begin(client, serverUrl);
+  if (!http.begin(client, serverUrl)) {
 
-  https.addHeader(
+    Serial.println("Falha ao iniciar HTTP");
+
+    return;
+  }
+
+  http.addHeader(
     "Content-Type",
     "application/json"
   );
 
-  https.addHeader(
+  http.addHeader(
     "X-Device-Token",
     DEVICE_TOKEN
   );
 
-  https.addHeader(
+  http.addHeader(
     "X-Timestamp",
     timestamp
   );
 
-  https.addHeader(
+  http.addHeader(
     "X-Signature",
     assinatura
   );
@@ -282,59 +292,32 @@ void enviarDados(float temperatura,
   // =================================================
 
   int httpCode =
-    https.POST(payload);
+    http.POST(payload);
 
   // =================================================
   // RESULTADO
   // =================================================
 
+  Serial.print("HTTP Code: ");
+  Serial.println(httpCode);
+
   if (httpCode > 0) {
 
-    Serial.print("HTTP Code: ");
-    Serial.println(httpCode);
-
     String resposta =
-      https.getString();
+      http.getString();
 
-    Serial.println("Resposta:");
+    Serial.println("Resposta do servidor:");
     Serial.println(resposta);
-
-    // sucesso
-    if (httpCode == 200) {
-
-      digitalWrite(ledPin, LOW);
-      digitalWrite(externalLedPin, HIGH);
-
-      delay(200);
-
-      digitalWrite(ledPin, HIGH);
-      digitalWrite(externalLedPin, LOW);
-    }
 
   } else {
 
-    Serial.print("Erro HTTPS: ");
-
+    Serial.print("Erro HTTP: ");
     Serial.println(
-      https.errorToString(httpCode)
+      http.errorToString(httpCode)
     );
-
-    // erro
-    for (int i = 0; i < 3; i++) {
-
-      digitalWrite(ledPin, LOW);
-      digitalWrite(externalLedPin, HIGH);
-
-      delay(300);
-
-      digitalWrite(ledPin, HIGH);
-      digitalWrite(externalLedPin, LOW);
-
-      delay(300);
-    }
   }
 
-  https.end();
+  http.end();
 }
 
 // =====================================================
