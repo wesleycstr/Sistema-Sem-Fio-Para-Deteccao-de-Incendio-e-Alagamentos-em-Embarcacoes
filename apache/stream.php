@@ -12,6 +12,17 @@ header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 
+function horaLocal($dataUTC) {
+    if (empty($dataUTC)) {
+        return '';
+    }
+
+    $data = new DateTime($dataUTC, new DateTimeZone('UTC'));
+    $data->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+
+    return $data->format('d/m/Y H:i:s');
+}
+
 while (ob_get_level() > 0) {
     ob_end_flush();
 }
@@ -89,7 +100,7 @@ while($row = $result->fetch_assoc()){
 
         $ultimaAtualizacao = strtotime($row['data_hora']);
 
-        $offline = (time() - $ultimaAtualizacao) > 60; //Ajuste para que o sensor seja considerado off line
+        $offline = (time() - $ultimaAtualizacao) > 10; //Ajuste para que o sensor seja considerado off line
     }
 
     /* estado atual salvo no banco */
@@ -243,7 +254,7 @@ onclick='abrirModal({$row['id']})'>
 </div>
 
 <div class='cardValor'>
-🕒 {$row['data_hora']}
+🕒 " . horaLocal($row['data_hora']) . "
 </div>
 
 <div class='cardStatus'>
@@ -286,7 +297,7 @@ onclick='abrirModal({$row['id']})'>
 
         <td>{$statusTexto}</td>
 
-        <td>{$row['data_hora']}</td>
+        <td>" . horaLocal($row['data_hora']) . "</td>
 
         <td>
 
@@ -310,8 +321,6 @@ onclick='abrirModal({$row['id']})'>
         </button>
 
         </td>
-
-</td>
 
     </tr>
 
@@ -557,7 +566,7 @@ if(!$resultEventos){
             </td>
 
             <td>
-                {$row['data_hora']}
+                 " . horaLocal($row['data_hora']) . "
             </td>
 
             <td>

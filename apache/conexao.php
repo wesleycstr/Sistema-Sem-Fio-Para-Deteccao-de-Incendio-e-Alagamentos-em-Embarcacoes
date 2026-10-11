@@ -1,10 +1,11 @@
 <?php
-date_default_timezone_set('America/Sao_Paulo');
+//date_default_timezone_set('America/Sao_Paulo');
+date_default_timezone_set('UTC');
 
-$host = "172.22.0.4";
+$host = "mariadb";
 $user = "root";
 $password = "senha";
-$database = "siscav";
+$database = "atalaia";
 
 // Criar conexão
 $conn = new mysqli($host, $user, $password, $database);

@@ -3,7 +3,7 @@
 $host = "mariadb";
 $user = "root";
 $pass = "senha";
-$db   = "siscav";
+$db   = "atalaia";
 
 $conn = new mysqli($host, $user, $pass, $db);
 

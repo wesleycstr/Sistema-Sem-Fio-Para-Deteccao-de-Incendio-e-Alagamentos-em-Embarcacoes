@@ -1814,129 +1814,249 @@ function fecharCadastroSensor(){
 
 function salvarSensor(){
 
-    /*const nome =
-    document.getElementById("novoNome").value;*/
+    // ==================================================
+    // DADOS BÁSICOS
+    // ==================================================
 
     const localizacao =
-    document.getElementById("novaLocalizacao").value;
+        document.getElementById("novaLocalizacao").value.trim();
 
     const token =
-    document.getElementById("novoToken").value;
+        document.getElementById("novoToken").value.trim();
 
     const chave =
-    document.getElementById("novaChave").value;
+        document.getElementById("novaChave").value.trim();
+
+
+    // ==================================================
+    // CONFIGURAÇÕES DO SENSOR DE AMBIENTE
+    // ==================================================
 
     const tempMax =
-    document.getElementById("novoTempMax").value;
+        document.getElementById("novoTempMax").value;
 
     const umiMin =
-    document.getElementById("novoUmiMin").value;
+        document.getElementById("novoUmiMin").value;
 
     const umiMax =
-    document.getElementById("novoUmiMax").value;
+        document.getElementById("novoUmiMax").value;
 
     const gasMax =
-    document.getElementById("novoGasMax").value;
+        document.getElementById("novoGasMax").value;
+
+
+    // ==================================================
+    // TIPO DO SENSOR
+    // ==================================================
+
+    const elementoTipo =
+        document.getElementById("tipoSensor");
 
     const tipoSensor =
-    document.getElementById("tipoSensor").value;
+        elementoTipo ? elementoTipo.value : "ambiente";
 
-    const nomeEvento =
-    document.getElementById("nomeEvento").value;
 
-    const nivelEvento =
-    document.getElementById("nivelEvento").value;
+    // ==================================================
+    // ALARME SONORO
+    // ==================================================
 
-    const canal =
-    document.getElementById("novoCanal").value;
+    const elementoAlarme =
+        document.getElementById("novoAlarmeSonoro");
 
     const alarmeSonoro =
-    document.getElementById(
-    "novoAlarmeSonoro"
-    ).checked ? 1 : 0;
+        elementoAlarme && elementoAlarme.checked ? 1 : 0;
+
+
+    // ==================================================
+    // CONFIGURAÇÕES DE EVENTO
+    // ==================================================
+
+    const elementoNomeEvento =
+        document.getElementById("nomeEvento");
+
+    const nomeEvento =
+        elementoNomeEvento
+            ? elementoNomeEvento.value.trim()
+            : "";
+
+
+    const elementoNivelEvento =
+        document.getElementById("nivelEvento");
+
+    const nivelEvento =
+        elementoNivelEvento
+            ? elementoNivelEvento.value
+            : "critico";
+
+
+    const elementoCanal =
+        document.getElementById("novoCanal");
+
+    const canal =
+        elementoCanal
+            ? elementoCanal.value
+            : 0;
+
+
+    // ==================================================
+    // EXECUÇÃO DE SCRIPT
+    // ==================================================
+    // Esses campos não existem atualmente no HTML.
+    // Portanto, usamos valores padrão.
+
+    const elementoExecutarScript =
+        document.getElementById("novoExecutarScript");
 
     const executarScript =
-    document.getElementById("novoExecutarScript").checked ? 1 : 0;
+        elementoExecutarScript &&
+        elementoExecutarScript.checked
+            ? 1
+            : 0;
+
+
+    const elementoScriptAlarme =
+        document.getElementById("novoScriptAlarme");
 
     const scriptAlarme =
-    document.getElementById("novoScriptAlarme").value;
+        elementoScriptAlarme
+            ? elementoScriptAlarme.value.trim()
+            : "";
+
+
+    // ==================================================
+    // VALIDAÇÕES
+    // ==================================================
+
+    if(token === ""){
+
+        alert("Informe o identificador do sensor.");
+
+        return;
+
+    }
+
+
+    if(localizacao === ""){
+
+        alert("Informe a localização do sensor.");
+
+        return;
+
+    }
+
+
+    if(chave === ""){
+
+        alert("Informe a chave secreta.");
+
+        return;
+
+    }
+
+
+    // ==================================================
+    // MONTAGEM DOS DADOS
+    // ==================================================
+
+    const dados = new URLSearchParams();
+
+    dados.append("localizacao", localizacao);
+
+    dados.append("token", token);
+
+    dados.append("chave", chave);
+
+    dados.append("tempMax", tempMax);
+
+    dados.append("umiMin", umiMin);
+
+    dados.append("umiMax", umiMax);
+
+    dados.append("gasMax", gasMax);
+
+    dados.append("alarmeSonoro", alarmeSonoro);
+
+    dados.append("tipoSensor", tipoSensor);
+
+    dados.append("nomeEvento", nomeEvento);
+
+    dados.append("nivelEvento", nivelEvento);
+
+    dados.append("canal", canal);
+
+    dados.append("executarScript", executarScript);
+
+    dados.append("scriptAlarme", scriptAlarme);
+
+
+    // ==================================================
+    // ENVIA PARA O SERVIDOR
+    // ==================================================
 
     fetch(
+        window.location.origin + "/cadastrar_sensor.php",
+        {
+            method: "POST",
 
-        window.location.origin +
-        "/cadastrar_sensor.php",
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded"
+            },
 
-    {
+            body: dados.toString()
+        }
+    )
 
-        method:"POST",
+    .then(response => {
 
-        headers:{
-            "Content-Type":
-            "application/x-www-form-urlencoded"
-        },
+        if(!response.ok){
 
-        body:
+            throw new Error(
+                "Erro HTTP: " + response.status
+            );
 
-        /*"nome=" + encodeURIComponent(nome) +*/
+        }
 
-        "&localizacao=" +
-        encodeURIComponent(localizacao) +
-
-        "&token=" +
-        encodeURIComponent(token) +
-
-        "&chave=" +
-        encodeURIComponent(chave) +
-
-        "&tempMax=" + tempMax +
-
-        "&umiMin=" + umiMin +
-
-        "&umiMax=" + umiMax +
-
-        "&gasMax=" + gasMax +
-
-        "&alarmeSonoro=" +
-        alarmeSonoro +
-
-        "&tipoSensor=" +
-        encodeURIComponent(tipoSensor) +
-
-        "&nomeEvento=" +
-        encodeURIComponent(nomeEvento) +
-
-        "&nivelEvento=" +
-        encodeURIComponent(nivelEvento) +
-
-        "&canal=" +
-        encodeURIComponent(canal) +
-
-        "&executarScript=" +
-        executarScript +
-
-        "&scriptAlarme=" +
-        encodeURIComponent(scriptAlarme)
+        return response.text();
 
     })
 
-    .then(response => response.text())
-
     .then(data => {
+
+        console.log(
+            "Resposta do servidor:",
+            data
+        );
 
         alert(data);
 
-        fecharCadastroSensor();
+        if(
+            data.includes(
+                "cadastrado com sucesso"
+            )
+        ){
+
+            fecharCadastroSensor();
+
+        }
 
     })
 
     .catch(error => {
 
-        console.log(error);
+        console.error(
+            "Erro ao cadastrar sensor:",
+            error
+        );
+
+        alert(
+            "Erro ao cadastrar o sensor.\n\n" +
+            error.message
+        );
 
     });
 
 }
-
 </script>
 
 <script>

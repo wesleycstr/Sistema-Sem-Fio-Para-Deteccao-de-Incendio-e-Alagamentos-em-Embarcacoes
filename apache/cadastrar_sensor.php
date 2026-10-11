@@ -1,254 +1,489 @@
 <?php
 
+// ======================================================
+// CONEXÃO
+// ======================================================
+
 include 'conexao.php';
+
+header('Content-Type: text/plain; charset=UTF-8');
 
 // ======================================================
 // DADOS RECEBIDOS
 // ======================================================
 
-$tipoSensor =
-$_POST['tipoSensor'] ?? 'ambiente';
+$tipoSensor = $_POST['tipoSensor'] ?? 'ambiente';
 
-$localizacao =
-trim($_POST['localizacao'] ?? '');
+$localizacao = trim($_POST['localizacao'] ?? '');
 
-$token =
-trim($_POST['token'] ?? '');
+$token = trim($_POST['token'] ?? '');
 
-$chave =
-trim($_POST['chave'] ?? '');
+$chave = trim($_POST['chave'] ?? '');
 
-$alarmeSonoro =
-intval($_POST['alarmeSonoro'] ?? 0);
+$alarmeSonoro = intval($_POST['alarmeSonoro'] ?? 0);
 
-/* CAMPOS SENSOR AMBIENTE */
 
-$tempMax =
-floatval($_POST['tempMax'] ?? 40);
+// ======================================================
+// CAMPOS SENSOR DE AMBIENTE
+// ======================================================
 
-$umiMin =
-floatval($_POST['umiMin'] ?? 20);
+$tempMax = floatval($_POST['tempMax'] ?? 40);
 
-$umiMax =
-floatval($_POST['umiMax'] ?? 80);
+$umiMin = floatval($_POST['umiMin'] ?? 20);
 
-$gasMax =
-floatval($_POST['gasMax'] ?? 100);
+$umiMax = floatval($_POST['umiMax'] ?? 80);
 
-/* CAMPOS SENSOR EVENTO */
+$gasMax = floatval($_POST['gasMax'] ?? 100);
 
-$nomeEvento =
-trim($_POST['nomeEvento'] ?? '');
 
-$nivelEvento =
-$_POST['nivelEvento'] ?? 'critico';
+// ======================================================
+// CAMPOS SENSOR DE EVENTO
+// ======================================================
+
+$nomeEvento = trim($_POST['nomeEvento'] ?? '');
+
+$nivelEvento = $_POST['nivelEvento'] ?? 'critico';
 
 $canal = intval($_POST['canal'] ?? 0);
 
-/*Campos da execução de scripts em eventos*/
 
-$executarScript =
-intval($_POST['executarScript'] ?? 0);
+// ======================================================
+// EXECUÇÃO DE SCRIPTS
+// ======================================================
 
-$scriptAlarme =
-trim($_POST['scriptAlarme'] ?? '');
+$executarScript = intval($_POST['executarScript'] ?? 0);
 
-var_dump([
-    'executarScript' => $executarScript,
-    'scriptAlarme' => $scriptAlarme
-]);
-
-exit;
+$scriptAlarme = trim($_POST['scriptAlarme'] ?? '');
 
 
 // ======================================================
-// VALIDAÇÕES
+// VALIDAÇÃO DO TIPO DE SENSOR
 // ======================================================
 
-if($localizacao==""){
+if ($tipoSensor !== 'ambiente' && $tipoSensor !== 'evento') {
+
+    die("Tipo de sensor inválido.");
+
+}
+
+
+// ======================================================
+// VALIDAÇÕES GERAIS
+// ======================================================
+
+if ($localizacao === '') {
 
     die("Informe a localização.");
 
 }
 
-if($token==""){
+if ($token === '') {
 
     die("Informe o identificador.");
 
 }
 
-if($chave==""){
+if ($chave === '') {
 
     die("Informe a chave secreta.");
 
 }
 
+
 // ======================================================
-// SENSOR AMBIENTE
+// VALIDAÇÃO DO ALARME SONORO
 // ======================================================
 
-if($tipoSensor=="ambiente"){
+$alarmeSonoro = ($alarmeSonoro == 1) ? 1 : 0;
 
-$stmt = $conn->prepare("
 
-INSERT INTO sensores
+// ======================================================
+// VALIDAÇÃO DA EXECUÇÃO DE SCRIPT
+// ======================================================
 
-(
+$executarScript = ($executarScript == 1) ? 1 : 0;
 
-localizacao,
 
-chave_secreta,
+// ======================================================
+// SENSOR DE AMBIENTE
+// ======================================================
 
-device_token,
+if ($tipoSensor === 'ambiente') {
 
-temperatura_max,
+    // --------------------------------------------------
+    // VALIDAÇÕES
+    // --------------------------------------------------
 
-umidade_min,
+    if ($tempMax < -50 || $tempMax > 100) {
 
-umidade_max,
+        die("Temperatura máxima inválida.");
 
-gas_max,
+    }
 
-alarme_sonoro,
+    if ($umiMin < 0 || $umiMin > 100) {
 
-offline,
+        die("Umidade mínima inválida.");
 
-ordem,
+    }
 
-ordem_cards
+    if ($umiMax < 0 || $umiMax > 100) {
 
-)
+        die("Umidade máxima inválida.");
 
-VALUES
+    }
 
-(
+    if ($umiMin > $umiMax) {
 
-?,?,?, ?,?,?,?, ?,0,0,0
+        die("A umidade mínima não pode ser maior que a umidade máxima.");
 
-)
+    }
 
-");
+    if ($gasMax < 0) {
 
-$stmt->bind_param(
+        die("Limite máximo de CO inválido.");
 
-"sssddddi",
+    }
 
-$localizacao,
 
-$chave,
+    // --------------------------------------------------
+    // VERIFICA SE O TOKEN JÁ EXISTE
+    // --------------------------------------------------
 
-$token,
+    $stmt = $conn->prepare("
+        SELECT id
+        FROM sensores
+        WHERE device_token = ?
+        LIMIT 1
+    ");
 
-$tempMax,
+    if (!$stmt) {
 
-$umiMin,
+        die("Erro ao preparar consulta: " . $conn->error);
 
-$umiMax,
+    }
 
-$gasMax,
+    $stmt->bind_param("s", $token);
 
-$alarmeSonoro
+    $stmt->execute();
 
-);
+    $stmt->store_result();
 
-if($stmt->execute()){
+    if ($stmt->num_rows > 0) {
 
-$idSensor = $stmt->insert_id;
+        $stmt->close();
 
-$conn->query("
+        die("Já existe um sensor cadastrado com este identificador.");
 
-INSERT INTO alarme
+    }
 
-(id_sensor,status)
+    $stmt->close();
 
-VALUES
 
-($idSensor,1)
+    // --------------------------------------------------
+    // CADASTRA O SENSOR
+    // --------------------------------------------------
 
-");
+    $stmt = $conn->prepare("
+        INSERT INTO sensores
+        (
+            device_token,
+            localizacao,
+            chave_secreta,
+            temperatura_max,
+            umidade_min,
+            umidade_max,
+            gas_max,
+            alarme_sonoro,
+            executar_script,
+            script_alarme,
+            offline,
+            ordem
+        )
+        VALUES
+        (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            0,
+            0
+        )
+    ");
 
-echo "Sensor de ambiente cadastrado com sucesso.";
+    if (!$stmt) {
 
-}else{
+        die("Erro ao preparar cadastro: " . $conn->error);
 
-echo "Erro ao cadastrar.<br>";
+    }
 
-echo $stmt->error;
 
+    $stmt->bind_param(
+        "sssddddiss",
+        $token,
+        $localizacao,
+        $chave,
+        $tempMax,
+        $umiMin,
+        $umiMax,
+        $gasMax,
+        $alarmeSonoro,
+        $executarScript,
+        $scriptAlarme
+    );
+
+
+    // --------------------------------------------------
+    // EXECUTA CADASTRO
+    // --------------------------------------------------
+
+    if (!$stmt->execute()) {
+
+        $erro = $stmt->error;
+
+        $stmt->close();
+
+        die("Erro ao cadastrar sensor: " . $erro);
+
+    }
+
+
+    // ID DO SENSOR
+    $idSensor = $stmt->insert_id;
+
+    $stmt->close();
+
+
+    // --------------------------------------------------
+    // CRIA REGISTRO INICIAL DO ALARME
+    // --------------------------------------------------
+
+    $stmtAlarme = $conn->prepare("
+        INSERT INTO alarme
+        (
+            id_sensor,
+            status,
+            cor
+        )
+        VALUES
+        (
+            ?,
+            1,
+            '#2e7d32'
+        )
+    ");
+
+    if (!$stmtAlarme) {
+
+        die(
+            "Sensor cadastrado, mas ocorreu um erro ao preparar o registro de alarme: "
+            . $conn->error
+        );
+
+    }
+
+
+    $stmtAlarme->bind_param("i", $idSensor);
+
+
+    if (!$stmtAlarme->execute()) {
+
+        $erro = $stmtAlarme->error;
+
+        $stmtAlarme->close();
+
+        die(
+            "Sensor cadastrado, mas ocorreu um erro ao criar o estado inicial do alarme: "
+            . $erro
+        );
+
+    }
+
+    $stmtAlarme->close();
+
+
+    // --------------------------------------------------
+    // RESPOSTA
+    // --------------------------------------------------
+
+    echo "Sensor de ambiente cadastrado com sucesso.";
+
+    exit;
 }
 
-exit;
-
-}
 
 // ======================================================
 // SENSOR DE EVENTO
 // ======================================================
 
-if($tipoSensor=="evento"){
+if ($tipoSensor === 'evento') {
 
-if($nomeEvento==""){
 
-die("Informe o nome do evento.");
+    // --------------------------------------------------
+    // VALIDAÇÕES
+    // --------------------------------------------------
 
+    if ($nomeEvento === '') {
+
+        die("Informe o nome do evento.");
+
+    }
+
+
+    $niveisValidos = [
+        'informacao',
+        'atencao',
+        'critico'
+    ];
+
+    if (!in_array($nivelEvento, $niveisValidos, true)) {
+
+        die("Nível do evento inválido.");
+
+    }
+
+
+    if ($canal < 0) {
+
+        die("Canal inválido.");
+
+    }
+
+
+    // --------------------------------------------------
+    // VERIFICA SE O TOKEN JÁ EXISTE
+    // --------------------------------------------------
+
+    /*
+     * Um mesmo device_token não deve ser duplicado
+     * dentro dos sensores de evento.
+     */
+
+    $stmt = $conn->prepare("
+        SELECT id
+        FROM sensores_evento
+        WHERE device_token = ?
+        LIMIT 1
+    ");
+
+    if (!$stmt) {
+
+        die("Erro ao preparar consulta: " . $conn->error);
+
+    }
+
+    $stmt->bind_param("s", $token);
+
+    $stmt->execute();
+
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+
+        $stmt->close();
+
+        die(
+            "Já existe um evento cadastrado com este identificador."
+        );
+
+    }
+
+    $stmt->close();
+
+
+    // --------------------------------------------------
+    // CADASTRA O SENSOR DE EVENTO
+    // --------------------------------------------------
+
+    $stmt = $conn->prepare("
+        INSERT INTO sensores_evento
+        (
+            device_token,
+            canal,
+            localizacao,
+            nome_evento,
+            nivel_evento,
+            estado,
+            estado_anterior,
+            data_hora,
+            alarme_sonoro,
+            executar_script,
+            script_alarme,
+            offline,
+            ordem_eventos
+        )
+        VALUES
+        (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            0,
+            0,
+            NULL,
+            ?,
+            ?,
+            ?,
+            0,
+            0
+        )
+    ");
+
+    if (!$stmt) {
+
+        die("Erro ao preparar cadastro do evento: " . $conn->error);
+
+    }
+
+
+    $stmt->bind_param(
+        "sisssiss",
+        $token,
+        $canal,
+        $localizacao,
+        $nomeEvento,
+        $nivelEvento,
+        $alarmeSonoro,
+        $executarScript,
+        $scriptAlarme
+    );
+
+
+    // --------------------------------------------------
+    // EXECUTA CADASTRO
+    // --------------------------------------------------
+
+    if (!$stmt->execute()) {
+
+        $erro = $stmt->error;
+
+        $stmt->close();
+
+        die("Erro ao cadastrar sensor de evento: " . $erro);
+
+    }
+
+    $stmt->close();
+
+
+    // --------------------------------------------------
+    // RESPOSTA
+    // --------------------------------------------------
+
+    echo "Sensor de evento cadastrado com sucesso.";
+
+    exit;
 }
 
 
-$stmt = $conn->prepare("
+// ======================================================
+// FINAL
+// ======================================================
 
-INSERT INTO sensores_evento
-(
-    device_token,
-    canal,
-    chave_secreta,
-    localizacao,
-    nome_evento,
-    nivel_evento,
-    alarme_sonoro,
-    executar_script,
-    script_alarme,
-    offline,
-    ordem_eventos
-)
-
-VALUES
-(
-    ?,?,?,?,?,?,
-    ?,?,?,0,0
-)
-
-");
-
-$stmt->bind_param(
-
-    "sissssiss",
-
-    $token,
-    $canal,
-    $chave,
-    $localizacao,
-    $nomeEvento,
-    $nivelEvento,
-    $alarmeSonoro,
-    $executarScript,
-    $scriptAlarme
-
-);
-
-if($stmt->execute()){
-
-echo "Sensor de evento cadastrado com sucesso.";
-
-}else{
-
-echo "Erro ao cadastrar.<br>";
-
-echo $stmt->error;
-
-}
-
-exit;
-
-}
-
-echo "Tipo de sensor inválido.";
+echo "Nenhum tipo de sensor foi processado.";
