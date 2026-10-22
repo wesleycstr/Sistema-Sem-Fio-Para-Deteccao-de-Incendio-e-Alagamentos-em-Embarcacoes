@@ -396,6 +396,7 @@ if ($tipoSensor === 'evento') {
     $stmt->close();
 
 
+
     // --------------------------------------------------
     // CADASTRA O SENSOR DE EVENTO
     // --------------------------------------------------
@@ -404,6 +405,7 @@ if ($tipoSensor === 'evento') {
         INSERT INTO sensores_evento
         (
             device_token,
+            chave_secreta,
             canal,
             localizacao,
             nome_evento,
@@ -419,32 +421,19 @@ if ($tipoSensor === 'evento') {
         )
         VALUES
         (
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            0,
-            0,
-            NULL,
-            ?,
-            ?,
-            ?,
-            0,
-            0
+            ?, ?, ?, ?, ?, ?,
+            0, 0, NULL, ?, ?, ?, 0, 0
         )
     ");
 
     if (!$stmt) {
-
         die("Erro ao preparar cadastro do evento: " . $conn->error);
-
     }
 
-
     $stmt->bind_param(
-        "sisssiss",
+        "ssisssiis",
         $token,
+        $chave,
         $canal,
         $localizacao,
         $nomeEvento,
@@ -454,30 +443,20 @@ if ($tipoSensor === 'evento') {
         $scriptAlarme
     );
 
-
     // --------------------------------------------------
     // EXECUTA CADASTRO
     // --------------------------------------------------
 
     if (!$stmt->execute()) {
-
         $erro = $stmt->error;
-
         $stmt->close();
 
         die("Erro ao cadastrar sensor de evento: " . $erro);
-
     }
 
     $stmt->close();
 
-
-    // --------------------------------------------------
-    // RESPOSTA
-    // --------------------------------------------------
-
     echo "Sensor de evento cadastrado com sucesso.";
-
     exit;
 }
 

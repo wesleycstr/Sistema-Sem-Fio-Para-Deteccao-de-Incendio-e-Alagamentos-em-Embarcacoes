@@ -5,7 +5,8 @@ date_default_timezone_set('UTC');
 $host = "mariadb";
 $user = "root";
 $password = "senha";
-$database = "atalaia";
+$database = "atalaia_2";
+//$database = "atalaia";
 
 // Criar conexão
 $conn = new mysqli($host, $user, $password, $database);

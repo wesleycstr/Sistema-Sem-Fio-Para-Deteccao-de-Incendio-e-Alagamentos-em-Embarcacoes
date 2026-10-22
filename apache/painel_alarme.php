@@ -300,6 +300,19 @@ tr{
 
 }
 
+.eventoInfo{
+    background:#1565c0;
+}
+
+.cardEvento{
+    min-height:145px;
+    box-sizing:border-box;
+}
+
+.cardEvento .cardStatus{
+    padding-top:7px;
+    border-top:1px solid rgba(255,255,255,.25);
+}
 
 .cardSensor.alarme{
 
@@ -569,7 +582,15 @@ tr{
     <button class="tabButton"
     onclick="abrirAba('painel')">
 
-        ▦ Visualização em Grid
+        ▦ Grid Ambiental
+
+    </button>
+
+
+    <button class="tabButton"
+    onclick="abrirAba('painelEventos')">
+
+        🚨 Grid de Eventos
 
     </button>
 
@@ -712,13 +733,28 @@ style="display:none;">
 
 <!-- ABA PAINEL -->
 
+
 <div id="abaPainel" class="aba" style="display:none;">
 
-    <div id="painelSensores" class="painelGrid">
+    <h2>🌡 Sensores Ambientais</h2>
 
-    </div>
+    <div id="painelSensores" class="painelGrid"></div>
 
 </div>
+
+<!-- ABA EXCLUSIVA PARA O GRID DE EVENTOS -->
+<div id="abaPainelEventos" class="aba" style="display:none;">
+
+    <h2>🚨 Sensores de Eventos</h2>
+
+    <p style="color:#bbb; margin-top:-5px;">
+        Estado dos eventos atualizado em tempo real.
+    </p>
+
+    <div id="painelEventos" class="painelGrid"></div>
+
+</div>
+
 
 <div id="modal"
 style="
@@ -776,7 +812,7 @@ Executar script em caso de alarme
 type="text"
 id="scriptAlarme"
 class="campo"
-placeholder="/grafana-server/web/script.php">
+placeholder="/var/www/html/teste_script.php">
 
 <br><br>
 
@@ -1103,105 +1139,41 @@ function salvarConfig(){
 <script>
 function abrirAba(nome){
 
-    // ==========================================
-    // ESCONDE TODAS AS ABAS
-    // ==========================================
+    const abas = {
+        sensores: "abaSensores",
+        eventos: "abaEventos",
+        painel: "abaPainel",
+        painelEventos: "abaPainelEventos",
+        logs: "abaLogs",
+        opcoes: "abaOpcoes"
+    };
 
-    document.getElementById("abaSensores").style.display = "none";
+    Object.values(abas).forEach(function(id){
+        const elemento = document.getElementById(id);
+        if(elemento) elemento.style.display = "none";
+    });
 
-    document.getElementById("abaEventos").style.display = "none";
+    document.querySelectorAll(".tabButton").forEach(function(btn){
+        btn.classList.remove("active");
+    });
 
-    document.getElementById("abaLogs").style.display = "none";
-
-    document.getElementById("abaPainel").style.display = "none";
-
-    document.getElementById("abaOpcoes").style.display = "none";
-
-
-    // ==========================================
-    // REMOVE O BOTÃO ATIVO
-    // ==========================================
-
-    document.querySelectorAll(".tabButton")
-        .forEach(function(btn){
-
-            btn.classList.remove("active");
-
-        });
-
-
-    // ==========================================
-    // ABRE A ABA SELECIONADA
-    // ==========================================
-
-    switch(nome){
-
-        case "sensores":
-
-            document.getElementById(
-                "abaSensores"
-            ).style.display = "block";
-
-            document.querySelectorAll(
-                ".tabButton"
-            )[0].classList.add("active");
-
-            break;
-
-
-        case "eventos":
-
-            document.getElementById(
-                "abaEventos"
-            ).style.display = "block";
-
-            document.querySelectorAll(
-                ".tabButton"
-            )[1].classList.add("active");
-
-            break;
-
-
-        case "painel":
-
-            document.getElementById(
-                "abaPainel"
-            ).style.display = "block";
-
-            document.querySelectorAll(
-                ".tabButton"
-            )[2].classList.add("active");
-
-            break;
-
-
-        case "logs":
-
-            document.getElementById(
-                "abaLogs"
-            ).style.display = "block";
-
-            document.querySelectorAll(
-                ".tabButton"
-            )[3].classList.add("active");
-
-            break;
-
-
-        case "opcoes":
-
-            document.getElementById(
-                "abaOpcoes"
-            ).style.display = "block";
-
-            document.querySelectorAll(
-                ".tabButton"
-            )[4].classList.add("active");
-
-            break;
-
+    if(abas[nome]){
+        document.getElementById(abas[nome]).style.display = "block";
     }
 
+    const indiceBotao = {
+        sensores: 0,
+        eventos: 1,
+        painel: 2,
+        painelEventos: 3,
+        logs: 4,
+        opcoes: 5
+    }[nome];
+
+    if(indiceBotao !== undefined){
+        const botao = document.querySelectorAll(".tabButton")[indiceBotao];
+        if(botao) botao.classList.add("active");
+    }
 }
 </script>
 
@@ -1303,6 +1275,10 @@ source.onmessage = function(event){
 
     document.getElementById("painelSensores").innerHTML =
         dados.cards;
+
+    // Atualiza o grid exclusivo dos sensores de eventos
+    document.getElementById("painelEventos").innerHTML =
+        dados.cardsEventos || "";
 
 
     // ==========================================

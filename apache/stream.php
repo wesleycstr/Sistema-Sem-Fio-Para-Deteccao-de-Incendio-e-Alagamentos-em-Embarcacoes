@@ -332,6 +332,7 @@ onclick='abrirModal({$row['id']})'>
 ===================================================== */
 
 $htmlEventos = "";
+$cardsEventos = "";
 
 $alarmeSonoroEvento = false;
 
@@ -535,7 +536,62 @@ if(!$resultEventos){
 
 
         /* =============================================
-           HTML
+           CARD PARA O GRID DE EVENTOS
+        ============================================= */
+
+        if($offline){
+            $classeCardEvento = "offline";
+            $textoEstadoEvento = "OFFLINE";
+        }elseif(intval($row['estado']) === 1){
+            $textoEstadoEvento = "ATIVADO";
+            if($row['nivel_evento'] === "critico"){
+                $classeCardEvento = "alarme";
+            }elseif($row['nivel_evento'] === "atencao"){
+                $classeCardEvento = "atencao";
+            }elseif($row['nivel_evento'] === "informacao"){
+                $classeCardEvento = "eventoInfo";
+            }else{
+                $classeCardEvento = "alarme";
+            }
+        }else{
+            $classeCardEvento = "normal";
+            $textoEstadoEvento = "NORMALIZADO";
+        }
+
+        $nomeEventoCard = htmlspecialchars(
+            (string)$row['nome_evento'], ENT_QUOTES, 'UTF-8'
+        );
+        $localEventoCard = htmlspecialchars(
+            (string)$row['localizacao'], ENT_QUOTES, 'UTF-8'
+        );
+        $nivelEventoCard = htmlspecialchars(
+            ucfirst((string)$row['nivel_evento']), ENT_QUOTES, 'UTF-8'
+        );
+        $tokenEventoCard = htmlspecialchars(
+            (string)$row['device_token'], ENT_QUOTES, 'UTF-8'
+        );
+        $canalEventoCard = (int)$row['canal'];
+        $idEventoCard = (int)$row['id'];
+        $dataEventoCard = htmlspecialchars(
+            horaLocal($row['data_hora']), ENT_QUOTES, 'UTF-8'
+        );
+
+        $cardsEventos .= "
+            <div class='cardSensor cardEvento {$classeCardEvento}'
+                 data-id='{$idEventoCard}'
+                 onclick='abrirModalEvento({$idEventoCard})'
+                 title='Clique para configurar este evento'>
+                <div class='cardTitulo'>{$icone} {$nomeEventoCard}</div>
+                <div class='cardValor'>📍 {$localEventoCard}</div>
+                <div class='cardValor'>🔌 Canal {$canalEventoCard}</div>
+                <div class='cardValor'>⚑ Nível: {$nivelEventoCard}</div>
+                <div class='cardValor'>🕒 {$dataEventoCard}</div>
+                <div class='cardStatus'>{$textoEstadoEvento}</div>
+            </div>
+        ";
+
+        /* =============================================
+           HTML DA TABELA DE EVENTOS
         ============================================= */
 
         $htmlEventos .= "
@@ -671,6 +727,9 @@ $dados = [
 
     "cards" =>
         str_replace("\n","",$cards),
+
+    "cardsEventos" =>
+        str_replace("\n","",$cardsEventos),
 
     "alarmeEvento" =>
         $alarmeSonoroEvento
