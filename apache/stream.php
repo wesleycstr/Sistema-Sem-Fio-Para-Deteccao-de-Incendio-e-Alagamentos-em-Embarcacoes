@@ -408,7 +408,7 @@ if(!$resultEventos){
                 time() - $ultimaAtualizacao;
 
             $offline =
-                $diferenca > 60; //Ajuste para que o sensor seja considerado offline
+                $diferenca > 10; //Ajuste para que o sensor seja considerado offline
 
         }
 
@@ -705,7 +705,7 @@ if($erroEventos){
                    font-weight:bold;
                    font-size:18px;'>
 
-            ⚠ EXISTEM EVENTOS SEM COMUNICAÇÃO
+            ⚠ EXISTEM SENSORES DE EVENTOS SEM COMUNICAÇÃO
 
         </td>
 

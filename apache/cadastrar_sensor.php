@@ -363,7 +363,7 @@ if ($tipoSensor === 'evento') {
      * Um mesmo device_token não deve ser duplicado
      * dentro dos sensores de evento.
      */
-
+    /*
     $stmt = $conn->prepare("
         SELECT id
         FROM sensores_evento
@@ -393,7 +393,7 @@ if ($tipoSensor === 'evento') {
 
     }
 
-    $stmt->close();
+    $stmt->close(); */
 
 
 

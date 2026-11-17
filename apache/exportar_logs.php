@@ -1,7 +1,7 @@
 <?php
 
 include 'conexao.php';
-
+date_default_timezone_set('America/Recife');
 
 /*
 =========================================================
@@ -476,7 +476,15 @@ while($row = $result->fetch_assoc()){
 
             /* DATA/HORA */
 
-            $row['data_hora'],
+            //$row['data_hora'],
+            (
+            new DateTime(
+                $row['data_hora'],
+                new DateTimeZone('UTC')
+            )
+                )->setTimezone(
+                    new DateTimeZone('America/Recife')
+                )->format('d/m/Y H:i:s'),
 
 
             /* TIPO */
